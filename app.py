@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,request,redirect,url_for
+from flask_login import login_user
 from extensions import db, login_manager
 from models import User, Trek
 import models
@@ -20,10 +21,36 @@ def user_loader(user_id):
     return User.query.get(int(user_id))
 
 
-@app.route("/")
-def home():
-    return render_template("login.html")
+@app.route("/",methods = ["GET","POST"])
+def login():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
 
+        user = User.query.filter_by(
+            email=email
+        ).first()
+        if user and user.password == password:
+            login_user(user)
+            if user.role == "admin":
+                return redirect(url_for("admin_dashboard"))
+            elif user.role == "staff":
+                return redirect(url_for("staff_dashboard"))
+            else:
+                return redirect(url_for("user_dashboard"))
+        return "Invalid Credentials"
+    return render_template("login.html")
+@app.route("/admin")
+def admin_dashboard():
+    return "<h1>Admin Dashboard</h1>"
+
+@app.route("/staff")
+def staff_dashboard():
+    return "<h1>Staff Dashboard</h1>"
+
+@app.route("/user")
+def user_dashboard():
+    return "<h1>User Dashboard</h1>"
 
 if __name__ == "__main__":
 
