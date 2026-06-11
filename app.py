@@ -1,7 +1,7 @@
 from flask import Flask, render_template,request,redirect,url_for
-from flask_login import login_user
+from flask_login import (login_user,login_required,current_user,logout_user)
 from extensions import db, login_manager
-from models import User, Trek
+from models import User, Trek,Booking
 import models
 
 app = Flask(__name__)
@@ -41,16 +41,87 @@ def login():
         return "Invalid Credentials"
     return render_template("login.html")
 @app.route("/admin")
+@login_required
 def admin_dashboard():
-    return "<h1>Admin Dashboard</h1>"
+    if current_user.role != "admin":
+        return "Access Denied!"
+    total_users = User.query.filter_by(
+        role = "user"
+    ).count()
+
+    total_staff = User.query.filter_by(
+        role = "staff"
+    ).count()
+
+    total_treks = Trek.query.count()
+
+    total_bookings = Booking.query.count()
+
+    return f"""
+    <h1>Admin Dashboard</h1>
+     <p>Total Users: {total_users}</p>
+     <p>Total Staff:{total_staff}</p> 
+     <p>Total Treks:{total_treks}</p> 
+     <p>Total Bookings: {total_bookings}</p>
+     """
 
 @app.route("/staff")
+@login_required
 def staff_dashboard():
+    if current_user.role != "staff":
+        return "Access Denied!"
     return "<h1>Staff Dashboard</h1>"
 
 @app.route("/user")
+@login_required
 def user_dashboard():
+    if current_user.role != "user":
+        return "Access Denied!"
     return "<h1>User Dashboard</h1>"
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
+
+@app.route("/register",methods = ["GET","POST"])
+def register():
+    if request.method == "POST":
+        name = request.form.get("name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        existing_user = User.query.filter_by(
+            email = email
+        ).first()
+
+        if existing_user:
+            return "User Already Exists"
+        
+        user = User(
+            name = name,
+            email = email,
+            password = password,
+            role = "user"
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        return redirect(url_for("login"))
+    return render_template("register.html")
+
+@app.route("/admin/users")
+@login_required
+def view_users():
+
+    if current_user.role != "admin":
+        return "Access Denied"
+    users = User.query.all()
+    return render_template("admin_users.html",
+    users = users
+    )
+
 
 if __name__ == "__main__":
 
