@@ -1,7 +1,7 @@
-from flask import Flask, render_template,request,redirect,url_for
-from flask_login import (login_user,login_required,current_user,logout_user)
+from flask import Flask, render_template, request, redirect, url_for
+from flask_login import login_user, login_required, current_user, logout_user
 from extensions import db, login_manager
-from models import User, Trek,Booking
+from models import User, Trek, Booking
 import models
 
 app = Flask(__name__)
@@ -21,15 +21,13 @@ def user_loader(user_id):
     return User.query.get(int(user_id))
 
 
-@app.route("/",methods = ["GET","POST"])
+@app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
 
-        user = User.query.filter_by(
-            email=email
-        ).first()
+        user = User.query.filter_by(email=email).first()
         if user and user.password == password:
             login_user(user)
             if user.role == "admin":
@@ -40,30 +38,23 @@ def login():
                 return redirect(url_for("user_dashboard"))
         return "Invalid Credentials"
     return render_template("login.html")
+
+
 @app.route("/admin")
 @login_required
 def admin_dashboard():
     if current_user.role != "admin":
         return "Access Denied!"
-    total_users = User.query.filter_by(
-        role = "user"
-    ).count()
+    return """
+    <h1>Admin DashBoard</h1>
+    <a href = "/admin/users">View Users</a>
+    <br><br>
+    <a href = "/admin/treks">View Treks</a>
+    <br><br>
+    <a href = "/admin/treks/create"> Create Treks </a>
+    <br><br>
+    """
 
-    total_staff = User.query.filter_by(
-        role = "staff"
-    ).count()
-
-    total_treks = Trek.query.count()
-
-    total_bookings = Booking.query.count()
-
-    return f"""
-    <h1>Admin Dashboard</h1>
-     <p>Total Users: {total_users}</p>
-     <p>Total Staff:{total_staff}</p> 
-     <p>Total Treks:{total_treks}</p> 
-     <p>Total Bookings: {total_bookings}</p>
-     """
 
 @app.route("/staff")
 @login_required
@@ -72,6 +63,7 @@ def staff_dashboard():
         return "Access Denied!"
     return "<h1>Staff Dashboard</h1>"
 
+
 @app.route("/user")
 @login_required
 def user_dashboard():
@@ -79,37 +71,33 @@ def user_dashboard():
         return "Access Denied!"
     return "<h1>User Dashboard</h1>"
 
+
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for("login"))
 
-@app.route("/register",methods = ["GET","POST"])
+
+@app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         name = request.form.get("name")
         email = request.form.get("email")
         password = request.form.get("password")
 
-        existing_user = User.query.filter_by(
-            email = email
-        ).first()
+        existing_user = User.query.filter_by(email=email).first()
 
         if existing_user:
             return "User Already Exists"
-        
-        user = User(
-            name = name,
-            email = email,
-            password = password,
-            role = "user"
-        )
+
+        user = User(name=name, email=email, password=password, role="user")
         db.session.add(user)
         db.session.commit()
 
         return redirect(url_for("login"))
     return render_template("register.html")
+
 
 @app.route("/admin/users")
 @login_required
@@ -118,9 +106,82 @@ def view_users():
     if current_user.role != "admin":
         return "Access Denied"
     users = User.query.all()
-    return render_template("admin_users.html",
-    users = users
-    )
+    return render_template("admin_users.html", users=users)
+
+
+@app.route("/admin/treks",methods = ["GET","POST"])
+@login_required
+def view_treks():
+    if current_user.role != "admin":
+        return "Access Denied!"
+    treks = Trek.query.all()
+    return render_template("admin_treks.html", treks=treks)
+
+@app.route("/admin/treks/create",methods = ["GET","POST"])
+@login_required
+def create_trek():
+    if current_user.role != "admin":
+        return "Access Denied!"
+    if request.method == "POST":
+        name = request.form.get("name")
+        location = request.form.get("location")
+        difficulty = request.form.get("difficulty")
+        duration = request.form.get("duration")
+        slots = request.form.get("slots")
+        status = "Open"
+
+        trek =  Trek(
+            name = name,
+            location = location,
+            difficulty = difficulty,
+            duration = int(duration),
+            available_slots = int(slots),
+            status = "Open"
+
+        )
+        db.session.add(trek)
+        db.session.commit()
+
+        return redirect(url_for("view_treks"))
+    return render_template("create_trek.html")
+
+@app.route("/admin/treks/edit/<int:id>",methods=["GET","POST"])
+@login_required
+def edit_trek(id):
+
+    if current_user.role != "admin":
+        return "Access Denied"
+
+    trek = Trek.query.get_or_404(id)
+
+    if request.method == "POST":
+
+        print(request.form)
+
+        trek.name = request.form.get("name")
+        trek.location = request.form.get("location")
+        trek.difficulty = request.form.get("difficulty")
+        trek.duration = int(request.form.get("duration"))
+        trek.available_slots = int(request.form.get("slots"))
+
+        db.session.commit()
+
+        return redirect(url_for("view_treks"))
+
+    return render_template("edit_trek.html", trek=trek)
+
+@app.route("/admin/treks/delete/<int:id>")
+@login_required
+def delete_trek(id):
+    if current_user.role != "admin":
+        return "Access Denied!"
+    trek = Trek.query.get_or_404(id)
+
+    db.session.delete(trek)
+    db.session.commit()
+
+    return redirect(url_for("view_treks"))
+
 
 
 if __name__ == "__main__":
@@ -129,16 +190,14 @@ if __name__ == "__main__":
 
         db.create_all()
 
-        admin = User.query.filter_by(
-            email="admin@musafir.com"
-        ).first()
+        admin = User.query.filter_by(email="admin@musafir.com").first()
 
         if not admin:
             admin = User(
                 name="Musafir Admin",
                 email="admin@musafir.com",
                 password="musafir123",
-                role="admin"
+                role="admin",
             )
 
             db.session.add(admin)
@@ -146,16 +205,14 @@ if __name__ == "__main__":
 
             print("Admin created successfully")
 
-        staff = User.query.filter_by(
-            email="staff@musafir.com"
-        ).first()
+        staff = User.query.filter_by(email="staff@musafir.com").first()
 
         if not staff:
             staff = User(
                 name="Rahul Kumar",
                 email="staff@musafir.com",
                 password="staff123",
-                role="staff"
+                role="staff",
             )
 
             db.session.add(staff)
@@ -163,9 +220,7 @@ if __name__ == "__main__":
 
             print("Staff created")
 
-        trek = Trek.query.filter_by(
-            name="Rajgad Trek"
-        ).first()
+        trek = Trek.query.filter_by(name="Rajgad Trek").first()
 
         if not trek:
             trek = Trek(
@@ -175,7 +230,7 @@ if __name__ == "__main__":
                 duration=2,
                 available_slots=25,
                 staff_id=staff.id,
-                status="Open"
+                status="Open",
             )
 
             db.session.add(trek)

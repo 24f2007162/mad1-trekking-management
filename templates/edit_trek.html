@@ -1,0 +1,16 @@
+{%extends "base.html"%}
+{%block content%}
+<h1>Edit Trek</h1>
+<form method="POST">
+
+  <input name="name" value="{{trek.name}}">
+  <input name="location" value="{{trek.location}}">
+  <input name="difficulty" value="{{trek.difficulty}}">
+  <input type = "number" name="duration" value="{{trek.duration}}">
+  <input type = "number"name="slots" value="{{trek.available_slots}}">
+  <button>Update</button>
+
+
+</form>
+
+{%endblock%}
