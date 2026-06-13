@@ -90,8 +90,9 @@ def staff_dashboard():
 def user_dashboard():
     if current_user.role != "user":
         return "Access Denied!"
-    treks = Trek.query.filter_by(
-        status = "Open"
+    treks = Trek.query.filter(
+        Trek.status == "Open",
+        Trek.available_slots > 0
     ).all()
     return render_template("user_dashboard.html",treks=treks)
 

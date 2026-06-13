@@ -11,7 +11,6 @@ class User(UserMixin,db.Model):
   role = db.Column(db.String(20),nullable = False)
   status = db.Column(db.String(20),default = "active")
   staff_profile = db.relationship("StaffProfile",backref = "user",uselist =  False)
-  assigned_treks = db.relationship("Trek",backref = "staff",lazy = True)
   bookings = db.relationship("Booking",backref = "user",lazy = True)
 
 class Trek(db.Model):
@@ -23,6 +22,7 @@ class Trek(db.Model):
   duration = db.Column(db.Integer,nullable =  False)
   available_slots = db.Column(db.Integer,nullable = False)
   staff_id = db.Column(db.Integer,db.ForeignKey("users.id"))
+  staff = db.relationship("User",backref = "assigned_treks")
   status = db.Column(db.String(20),nullable = False)
   start_date = db.Column(db.Date)
   end_date = db.Column(db.Date)
