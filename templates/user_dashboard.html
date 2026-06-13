@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href = "/my-bookings">View My Bookings</a>
+<br><br>
+
+<h1>Available Treks</h1>
+
+<table border="1">
+
+  <tr>
+    <th>Name</th>
+    <th>Location</th>
+    <th>Slots</th>
+    <th>Action</th>
+  </tr>
+
+  {% for trek in treks %}
+
+  <tr>
+
+    <td>{{ trek.name }}</td>
+
+    <td>{{ trek.location }}</td>
+
+    <td>{{ trek.available_slots }}</td>
+
+    <td>
+
+      <a href="/book/{{ trek.id }}">
+        Book
+      </a>
+
+    </td>
+
+  </tr>
+
+  {% endfor %}
+
+</table>
+
+{% endblock %}

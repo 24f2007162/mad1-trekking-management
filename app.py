@@ -90,7 +90,62 @@ def staff_dashboard():
 def user_dashboard():
     if current_user.role != "user":
         return "Access Denied!"
-    return "<h1>User Dashboard</h1>"
+    treks = Trek.query.filter_by(
+        status = "Open"
+    ).all()
+    return render_template("user_dashboard.html",treks=treks)
+
+@app.route("/book/<int:id>")
+@login_required
+def book_trek(id):
+    if current_user.role != "user":
+        return "Users Only!"
+    trek = Trek.query.get_or_404(id)
+    
+    existing_booking = Booking.query.filter_by(
+        user_id = current_user.id,
+        trek_id = trek.id
+    ).first()
+        
+    if existing_booking:
+        return "Already Booked"
+    
+    if trek.available_slots <= 0:
+        return "No slots Available"
+    booking = Booking(
+        user_id = current_user.id,
+        trek_id = trek.id
+    )
+    trek.available_slots -= 1
+    db.session.add(booking)
+    db.session.commit()
+    return redirect(url_for("user_dashboard"))
+
+@app.route("/my-bookings")
+@login_required
+def my_bookings():
+    if current_user.role != "user":
+        return "Access Denied!"
+    bookings = Booking.query.filter_by(
+        user_id = current_user.id
+    ).all()
+    return render_template("my_bookings.html",bookings=bookings)
+
+@app.route("/cancel-booking/<int:id>")
+@login_required
+def cancel_booking(id):
+    if current_user.role != "user":
+        return "Access Denied!"
+    booking = Booking.query.get_or_404(id)
+
+    if booking.user_id != current_user.id:
+        return "Unauthorized"
+    trek = booking.trek
+    trek.available_slots +=1
+    db.session.delete(booking)
+    db.session.commit()
+
+    return redirect(url_for("my_bookings"))
 
 
 @app.route("/logout")
@@ -156,9 +211,17 @@ def view_users():
 def view_staff():
     if current_user.role != "admin":
         return "Access Denied!"
-    staff = User.query.filter_by(role="staff").all()
+    search = request.args.get("search")
+    if search:
+        staff = User.query.filter(
+            User.role == "staff",
+            User.name.contains(search)
+        ).all()
+    else:
+        staff = User.query.filter_by(role="staff").all()
 
-    return render_template("admin_staff.html", staff=staff)
+    return render_template("admin_staff.html", staff=staff)    
+    
 
 
 @app.route("/admin/staff/toggle/<int:id>")
@@ -187,7 +250,13 @@ def toggle_staff(id):
 def view_treks():
     if current_user.role != "admin":
         return "Access Denied!"
-    treks = Trek.query.all()
+    search = request.args.get("search")
+    if search:
+        treks = Trek.query.filter(
+            Trek.name.contains(search)
+        ).all()
+    else:
+        treks = Trek.query.all()    
     return render_template("admin_treks.html", treks=treks)
 
 

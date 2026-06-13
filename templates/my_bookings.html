@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>My Bookings</h1>
+
+<table border="1">
+
+  <tr>
+    <th>Booking ID</th>
+    <th>Trek Name</th>
+    <th>Location</th>
+    <th>Action</th>
+  </tr>
+
+  {% for booking in bookings %}
+
+  <tr>
+
+    <td>
+      {{ booking.id }}
+    </td>
+
+    <td>
+      {{ booking.trek.name }}
+    </td>
+
+    <td>
+      {{ booking.trek.location }}
+    </td>
+
+    <td>
+      <a href="/cancel-booking/{{booking.id}}">Cancel</a>
+    </td>
+
+  </tr>
+
+  {% endfor %}
+
+</table>
+
+{% endblock %}
