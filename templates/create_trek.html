@@ -1,41 +1,68 @@
-{%extends "base.html"%}
-{%block content%}
-<h1>Trek Creation Form</h1>
-<form method="POST">
-  <input
-   type = "text"
-   name="name"
-   placeholder="Trek Name"
-   required
-  >
-  <input
-  type = "text"
-  name = "location"
-  placeholder="Location"
-  required
-  >
-  <input
-  type = "text"
-  name = "difficulty"
-  placeholder="Difficulty"
-  required
-  >
-  <input
-   type = "number"
-   name = "duration"
-   placeholder="Duration of Trek"
-   required
-  >
-  <input
-  type = "number"
-  name = "slots"
-  placeholder="Slots Available"
-  required  
-  >
-  <button type="submit">Create Trek</button>
-  
+{% extends "base.html" %}
 
+{% block content %}
+
+<h1>Trek Creation Form</h1>
+
+<form method="POST">
+
+  <input
+    type="text"
+    name="name"
+    placeholder="Trek Name"
+    required
+  >
+
+  <input
+    type="text"
+    name="location"
+    placeholder="Location"
+    required
+  >
+
+  <input
+    type="text"
+    name="difficulty"
+    placeholder="Difficulty"
+    required
+  >
+
+  <input
+    type="number"
+    name="duration"
+    placeholder="Duration of Trek"
+    required
+  >
+
+  <input
+    type="number"
+    name="slots"
+    placeholder="Slots Available"
+    required
+  >
+
+  <label>Assign Staff</label>
+
+  <select name="staff_id">
+
+    <option value="">
+      Select Staff
+    </option>
+
+    {% for member in staff %}
+
+    <option value="{{ member.id }}">
+      {{ member.name }}
+    </option>
+
+    {% endfor %}
+
+  </select>
+
+  <button type="submit">
+    Create Trek
+  </button>
 
 </form>
 
-{%endblock%}
+{% endblock %}

@@ -1,0 +1,40 @@
+{%extends "base.html"%}
+{%block content%}
+
+<h1>Staff Members</h1>
+<table border="1">
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Status</th>
+    <th>Action</th>
+  </tr>
+  {%for member in staff%}
+  <tr>
+    <td>{{member.id}}</td>
+    <td>{{member.name}}</td>
+    <td>{{member.email}}</td>
+    <td>{{member.status}}</td>
+    <td>
+      <a href="/admin/staff/toggle/{{member.id}}">
+
+        {% if member.status|lower == "active" %}
+
+        Deactivate
+
+        {% else %}
+
+        Activate
+
+        {% endif %}
+
+      </a>
+    </td>
+  </tr>
+  {%endfor%}
+</table>
+
+
+
+{%endblock%}

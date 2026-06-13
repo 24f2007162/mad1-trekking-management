@@ -23,21 +23,39 @@ def user_loader(user_id):
 
 @app.route("/", methods=["GET", "POST"])
 def login():
+
     if request.method == "POST":
+
         email = request.form.get("email")
         password = request.form.get("password")
 
-        user = User.query.filter_by(email=email).first()
-        if user and user.password == password:
+        user = User.query.filter_by(
+            email=email
+        ).first()
+
+        if not user:
+            return "Invalid Credentials"
+
+        if user.status == "inactive":
+            return "Account Disabled"
+
+        if user.password == password:
+
             login_user(user)
+
             if user.role == "admin":
                 return redirect(url_for("admin_dashboard"))
+
             elif user.role == "staff":
                 return redirect(url_for("staff_dashboard"))
+
             else:
                 return redirect(url_for("user_dashboard"))
+
         return "Invalid Credentials"
+
     return render_template("login.html")
+    
 
 
 @app.route("/admin")
@@ -53,6 +71,9 @@ def admin_dashboard():
     <br><br>
     <a href = "/admin/treks/create"> Create Treks </a>
     <br><br>
+    <a href = "/admin/staff/create">Add Staff</a>
+    <br><br>
+    <a href = "/admin/staff">View Staff</a>
     """
 
 
@@ -99,6 +120,27 @@ def register():
     return render_template("register.html")
 
 
+@app.route("/admin/staff/create", methods=["GET", "POST"])
+@login_required
+def create_staff():
+    if current_user.role != "admin":
+        return "Access Denied!"
+    if request.method == "POST":
+        name = request.form.get("name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        existing = User.query.filter_by(email=email).first()
+        if existing:
+            return "Staff Already Exists"
+        staff = User(name=name, email=email, password=password, role="staff")
+        db.session.add(staff)
+        db.session.commit()
+
+        return redirect(url_for("view_users"))
+    return render_template("create_staff.html")
+
+
 @app.route("/admin/users")
 @login_required
 def view_users():
@@ -109,7 +151,38 @@ def view_users():
     return render_template("admin_users.html", users=users)
 
 
-@app.route("/admin/treks",methods = ["GET","POST"])
+@app.route("/admin/staff")
+@login_required
+def view_staff():
+    if current_user.role != "admin":
+        return "Access Denied!"
+    staff = User.query.filter_by(role="staff").all()
+
+    return render_template("admin_staff.html", staff=staff)
+
+
+@app.route("/admin/staff/toggle/<int:id>")
+@login_required
+def toggle_staff(id):
+
+    if current_user.role != "admin":
+        return "Access Denied"
+
+    staff = User.query.get_or_404(id)
+
+    if staff.status.lower() == "active":
+        staff.status = "inactive"
+
+    else:
+        staff.status = "active"
+
+    db.session.commit()
+
+    return redirect(url_for("view_staff"))        
+
+
+
+@app.route("/admin/treks", methods=["GET", "POST"])
 @login_required
 def view_treks():
     if current_user.role != "admin":
@@ -117,35 +190,39 @@ def view_treks():
     treks = Trek.query.all()
     return render_template("admin_treks.html", treks=treks)
 
-@app.route("/admin/treks/create",methods = ["GET","POST"])
+
+@app.route("/admin/treks/create", methods=["GET", "POST"])
 @login_required
 def create_trek():
     if current_user.role != "admin":
         return "Access Denied!"
+    staff = User.query.filter_by(role="staff").all()
+    print("STAFF FOUND", staff)
     if request.method == "POST":
         name = request.form.get("name")
         location = request.form.get("location")
         difficulty = request.form.get("difficulty")
         duration = request.form.get("duration")
         slots = request.form.get("slots")
-        status = "Open"
+        staff_id = request.form.get("staff_id")
 
-        trek =  Trek(
-            name = name,
-            location = location,
-            difficulty = difficulty,
-            duration = int(duration),
-            available_slots = int(slots),
-            status = "Open"
-
+        trek = Trek(
+            name=name,
+            location=location,
+            difficulty=difficulty,
+            duration=int(duration),
+            available_slots=int(slots),
+            staff_id=int(staff_id),
+            status="Open",
         )
         db.session.add(trek)
         db.session.commit()
 
         return redirect(url_for("view_treks"))
-    return render_template("create_trek.html")
+    return render_template("create_trek.html", staff=staff)
 
-@app.route("/admin/treks/edit/<int:id>",methods=["GET","POST"])
+
+@app.route("/admin/treks/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_trek(id):
 
@@ -163,12 +240,20 @@ def edit_trek(id):
         trek.difficulty = request.form.get("difficulty")
         trek.duration = int(request.form.get("duration"))
         trek.available_slots = int(request.form.get("slots"))
+        selected_staff = request.form.get("staff_id")
+        if selected_staff:
+            trek.staff_id = int(selected_staff)
+        else:
+            trek.staff_id = None
 
         db.session.commit()
 
         return redirect(url_for("view_treks"))
 
-    return render_template("edit_trek.html", trek=trek)
+    staff = User.query.filter_by(role="staff").all()
+
+    return render_template("edit_trek.html", trek=trek, staff=staff)
+
 
 @app.route("/admin/treks/delete/<int:id>")
 @login_required
@@ -181,7 +266,6 @@ def delete_trek(id):
     db.session.commit()
 
     return redirect(url_for("view_treks"))
-
 
 
 if __name__ == "__main__":

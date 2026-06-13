@@ -9,6 +9,7 @@
     <th>Difficulty</th>
     <th>Slots</th>
     <th>Status</th>
+    <th>Assigned Staff</th>
     <th>Edit-Details</th>
     <th>Delete-Trek</th>
   </tr>
@@ -20,8 +21,14 @@
     <td>{{trek.difficulty}}</td>
     <td>{{trek.available_slots}}</td>
     <td>{{trek.status}}</td>
-    <td><a href = "/admin/treks/edit/{{trek.id}}">Edit</a></td>
-    <td><a href = "/admin/treks/delete/{{trek.id}}">Delete</a></td>
+    <td>{%if trek.staff%}
+      {{trek.staff.name}}
+      {%else%}
+      Not Assigned
+      {%endif%}
+    </td>
+    <td><a href="/admin/treks/edit/{{trek.id}}">Edit</a></td>
+    <td><a href="/admin/treks/delete/{{trek.id}}">Delete</a></td>
   </tr>
   {%endfor%}
 
