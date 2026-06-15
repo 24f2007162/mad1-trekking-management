@@ -1,0 +1,21 @@
+{%extends "base.html" %}
+{% block content %}
+<h1>Assigned Trekkers and details</h1>
+<table border = "1">
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+  </tr>
+  {% for booking in bookings %}
+  <tr>
+   <td>{{booking.user.name}}</td>
+   <td>{{booking.user.email}}</td>
+
+  </tr>
+  {% endfor %}
+
+</table>
+
+
+
+{% endblock %}

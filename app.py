@@ -82,7 +82,70 @@ def admin_dashboard():
 def staff_dashboard():
     if current_user.role != "staff":
         return "Access Denied!"
-    return "<h1>Staff Dashboard</h1>"
+    treks = Trek.query.filter_by(
+        staff_id = current_user.id
+    ).all()
+
+    return render_template("staff_dashboard.html",treks = treks)
+
+@app.route("/staff/treks/<int:id>")
+@login_required
+def view_participants(id):
+    if current_user.role != "staff":
+        return "Access Denied!"
+    
+    trek = Trek.query.get_or_404(id)
+    if trek.staff_id != current_user.id:
+        return "Not Authorized"
+    bookings = Booking.query.filter_by(
+        trek_id =id
+    ).all()
+
+    print("BOOKED",bookings)
+
+    return render_template("staff_participants.html",trek=trek,bookings=bookings)
+
+@app.route("/staff/request/<int:id>")
+@login_required
+def request_assignment(id):
+    if current_user.role != "staff":
+        return "Access Denied!"
+    
+    trek = Trek.query.get_or_404(id)
+    if trek.staff_id != current_user.id:
+        return "Not Authorized"
+    trek.status = "Guide Change Requested"
+
+    db.session.commit()
+    return redirect(url_for("staff_dashboard"))
+
+@app.route("/staff/trek/start/<int:id>")
+@login_required
+def start_trek(id):
+    if current_user.role != "staff":
+        return "Access Denied!"
+    trek = Trek.query.get_or_404(id)
+
+    if trek.staff_id != current_user.id:
+        return "Not Authorized"
+    trek.status = "Ongoing"
+
+    db.session.commit()
+    return redirect(url_for("staff_dashboard"))
+
+@app.route("/staff/trek/complete/<int:id>")
+@login_required
+def complete_trek(id):
+    if current_user.role != "staff":
+        return "Access Denied!"
+    trek = Trek.query.get_or_404(id)
+    if trek.staff_id != current_user.id:
+        return "Not Authorized"
+    trek.status = "Completed"
+
+    db.session.commit()
+    return redirect(url_for("staff_dashboard"))
+
 
 
 @app.route("/user")
@@ -311,8 +374,16 @@ def edit_trek(id):
         trek.duration = int(request.form.get("duration"))
         trek.available_slots = int(request.form.get("slots"))
         selected_staff = request.form.get("staff_id")
+
+        old_staff = trek.staff_id
+
         if selected_staff:
             trek.staff_id = int(selected_staff)
+            if(
+                old_staff != trek.staff_id
+                and trek.status == "Guide Change Requested"
+            ):
+                trek.status = "Open"
         else:
             trek.staff_id = None
 

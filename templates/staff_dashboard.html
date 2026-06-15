@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Assigned treks</h1>
+
+<table border="1">
+  <tr>
+    <th>Name</th>
+    <th>location</th>
+    <th>Difficulty</th>
+    <th>Booked</th>
+    <th>Remaining</th>
+    <th>Occupancy</th>
+    <th>Status</th>
+    <th>Participants</th>
+    <th>Action</th>
+    <th>Status Update</th>
+  </tr>
+
+  {% for trek in treks %}
+  <tr>
+    <td>{{trek.name}}</td>
+    <td>{{trek.location}}</td>
+    <td>{{trek.difficulty}}</td>
+    <td>
+      {{trek.bookings|length}}
+    </td>
+    <td>{{trek.available_slots}}</td>
+    <td>
+      {% set total = trek.bookings|length + trek.available_slots%}
+      {% if total > 0 %}
+      {{(((trek.bookings|length / total)*100)|round(0)|int)}}%
+      {% else %}
+      0%
+      {% endif %}
+    </td>
+    <td>{% if trek.available_slots == 0 %}
+      FULL
+      {% else %}
+      {{trek.status}}
+      {% endif %}
+    </td>
+    <td>
+
+      <a href="/staff/treks/{{trek.id}}">View Users</a>
+
+    </td>
+    <td>
+      {% if trek.status != "Guide Change Requested"%}
+      <a href = "/staff/request/{{trek.id}}">Request Reassignment</a>
+      {%else%}
+      Pending
+      {% endif %}
+    </td>
+    <td>
+      {% if trek.status == "Open" %}
+      <a href = "/staff/trek/start/{{trek.id}}">Start Trek</a>
+      {% elif trek.status == "Ongoing" %}
+      <a href = "/staff/trek/complete/{{trek.id}}">Mark Completed</a>
+      {% elif trek.status == "Completed"%}
+      Completed
+      {%else%}
+      -
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+
+{% endblock %}
