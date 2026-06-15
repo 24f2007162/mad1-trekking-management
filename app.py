@@ -3,6 +3,7 @@ from flask_login import login_user, login_required, current_user, logout_user
 from extensions import db, login_manager
 from models import User, Trek, Booking
 import models
+from werkzeug.security import(generate_password_hash,check_password_hash)
 
 app = Flask(__name__)
 
@@ -39,7 +40,7 @@ def login():
         if user.status == "inactive":
             return "Account Disabled"
 
-        if user.password == password:
+        if check_password_hash(user.password,password):
 
             login_user(user)
 
@@ -230,6 +231,8 @@ def register():
 
         if existing_user:
             return "User Already Exists"
+        
+        hashed_password = generate_password_hash(password)
 
         user = User(name=name, email=email, password=password, role="user")
         db.session.add(user)
