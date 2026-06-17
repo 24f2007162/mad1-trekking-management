@@ -1,32 +1,112 @@
-{% extends "base.html"%}
-{%block content%}
+{% extends "base.html" %}
 
-<h1>Login Page</h1>
-<form method="POST">
-  <input
-    type = "email"
-    name="email"
-    placeholder="Email"
-    required  
-  
-  >
-  <br><br>
+{% block content %}
 
-  <input
-    type = "password"
-    name="password"
-    placeholder="Password"
-    required
-  
-  >
-  <br><br>
+<div class="hero">
 
-  <button type="submit">
-    Login
-  </button>
- 
+  ```
+  <div class="hero-overlay">
 
-</form>
+    <nav class="landing-nav">
 
 
-{%endblock%}
+      <div class="nav-links">
+
+        <a href="/">Home</a>
+
+        <a href="#">Treks</a>
+
+        <a href="/about">About</a>
+
+        <a href="/register">Register</a>
+
+      </div>
+
+    </nav>
+
+
+    <div class="landing-content">
+
+
+      <div class="hero-left">
+
+        <p class="subtitle">
+
+          Journey to new frontiers
+
+        </p>
+
+
+        
+      <div class="logo">
+
+        Musafir Treks
+
+      </div>
+      <br><br>
+
+
+        <p>
+
+          Explore India.
+          Book guided adventures.
+          Create unforgettable journeys.
+
+        </p>
+
+
+        <button class="start-btn">
+
+          Start Journey →
+
+        </button>
+
+      </div>
+
+
+
+      <form id="login" class="login-panel" method="POST">
+
+        <h2>
+
+          Login
+
+        </h2>
+
+
+        <input type="email" name="email" placeholder="Email" required />
+
+
+        <input type="password" name="password" placeholder="Password" required />
+
+
+        <button type="submit" class="login-btn">
+
+          Login
+
+        </button>
+
+
+        <div class="register-link">
+
+          New here?
+
+          <a href="/register">
+
+            Create Account
+
+          </a>
+
+        </div>
+
+
+      </form>
+
+    </div>
+
+  </div>
+  ```
+
+</div>
+
+{% endblock %}

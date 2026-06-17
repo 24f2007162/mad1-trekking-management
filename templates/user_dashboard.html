@@ -1,56 +1,48 @@
 {% extends "base.html" %}
 
 {% block content %}
-<a href="/my-bookings">View My Bookings</a>
-<br><br>
 
-<h1>Available Treks</h1>
+<div class="hero">
+  <div class="hero-overlay">
+    <h1>Welcome to Musafir Treks</h1>
+    <p>Explore India, one trek at a time</p>
+    <div>
+      <h1>Available Treks</h1>
+    </div>
+  </div>
+</div>
 
-<table border="1">
 
-  <tr>
-    <th>Name</th>
-    <th>Location</th>
-    <th>Slots</th>
-    <th>Action</th>
-    <th>Guide</th>
-  </tr>
+
+<div class="trek-grid">
 
   {% for trek in treks %}
+  <div class="trek-card">
 
-  <tr>
+    <img class="trek-image" src="{{ url_for(
+'static',
+filename='images/' + (trek.image or 'default-trek.jpg')
+) }}" />
 
-    <td>{{ trek.name }}</td>
+    <div class="trek-info">
 
-    <td>{{ trek.location }}</td>
+      <h2>{{ trek.name }}</h2>
+      <p>📍 Location: {{ trek.location }}</p>
+      <p>⛰ Difficulty: {{ trek.difficulty }}</p>
+      <p>🧭 Guide: {{ trek.staff.name if trek.staff else "Guide Coming Soon" }}</p>
+      <p>🎟 Slots: {{ trek.available_slots }}</p>
 
-    <td>{{ trek.available_slots }}</td>
-
-    <td>
-
-      <a href="/book/{{ trek.id }}">
-        Book
+      <a class="book-btn" href="/book/{{ trek.id }}">
+        Book Now
       </a>
 
-    </td>
-    <td>
+    </div>
 
-      {% if trek.staff %}
-
-      {{ trek.staff.name }}
-
-      {% else %}
-
-      Not Assigned
-
-      {% endif %}
-
-    </td>
-
-  </tr>
-
+  </div>
   {% endfor %}
 
-</table>
+  <a class="book-btn" href="/my-bookings">View Bookings</a>
+
+</div>
 
 {% endblock %}

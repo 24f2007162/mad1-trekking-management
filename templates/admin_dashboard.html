@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Admin Dashboard</h1>
+
+<div class="dashboard-grid">
+
+<a class="dashboard-card"
+href="/admin/users">
+
+👥
+
+View Users
+
+Manage registered users
+
+</a>
+<br><br>
+
+<a class="dashboard-card"
+href="/admin/treks">
+
+🏔
+
+View Treks
+
+Monitor trek activity
+
+</a>
+<br><br>
+
+<a class="dashboard-card"
+href="/admin/treks/create">
+
+➕
+
+Create Treks
+
+Add new adventures
+
+</a>
+<br><br>
+
+<a class="dashboard-card"
+href="/admin/staff/create">
+
+🧭
+
+Add Staff
+
+Assign trek guides
+
+</a>
+<br><br>
+
+<a class="dashboard-card"
+href="/admin/staff">
+
+📋
+
+View Staff
+
+Track guide assignments
+
+</a>
+<br><br>
+
+</div>
+
+{% endblock %}

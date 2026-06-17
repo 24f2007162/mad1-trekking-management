@@ -28,7 +28,9 @@ class Trek(db.Model):
   end_date = db.Column(db.Date)
   bookings = db.relationship("Booking",backref = "trek",lazy = True)
   description = db.Column(db.Text)
-  created_at = db.Column(db.DateTime, default = lambda: datetime.now(UTC))  
+  image = db.Column(db.String(255),default = "default-trek.jpg")
+  created_at = db.Column(db.DateTime, default = lambda: datetime.now(UTC))
+    
 
 class Booking(db.Model):
   __tablename__ = "bookings"

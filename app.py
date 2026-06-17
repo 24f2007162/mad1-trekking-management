@@ -64,18 +64,7 @@ def login():
 def admin_dashboard():
     if current_user.role != "admin":
         return "Access Denied!"
-    return """
-    <h1>Admin DashBoard</h1>
-    <a href = "/admin/users">View Users</a>
-    <br><br>
-    <a href = "/admin/treks">View Treks</a>
-    <br><br>
-    <a href = "/admin/treks/create"> Create Treks </a>
-    <br><br>
-    <a href = "/admin/staff/create">Add Staff</a>
-    <br><br>
-    <a href = "/admin/staff">View Staff</a>
-    """
+    return render_template("admin_dashboard.html")
 
 
 @app.route("/staff")
@@ -226,6 +215,11 @@ def register():
         name = request.form.get("name")
         email = request.form.get("email")
         password = request.form.get("password")
+        if len(password) < 8:
+           return "Password must be at least 8 characters"
+
+        if password.isalpha():
+          return "Password should include numbers"
 
         existing_user = User.query.filter_by(email=email).first()
 
@@ -350,6 +344,7 @@ def create_trek():
             available_slots=int(slots),
             staff_id=int(staff_id),
             status="Open",
+            image = request.form.get("image")
         )
         db.session.add(trek)
         db.session.commit()
@@ -377,6 +372,7 @@ def edit_trek(id):
         trek.duration = int(request.form.get("duration"))
         trek.available_slots = int(request.form.get("slots"))
         selected_staff = request.form.get("staff_id")
+        trek.image = request.form.get("image")
 
         old_staff = trek.staff_id
 
@@ -410,6 +406,11 @@ def delete_trek(id):
     db.session.commit()
 
     return redirect(url_for("view_treks"))
+
+@app.route("/about")
+@login_required
+def about_site():
+    return render_template("about.html")
 
 
 if __name__ == "__main__":
