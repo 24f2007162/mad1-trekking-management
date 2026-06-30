@@ -3,7 +3,7 @@ from flask_login import login_user, login_required, current_user, logout_user
 from extensions import db, login_manager
 from models import User, Trek, Booking
 import models
-from werkzeug.security import(generate_password_hash,check_password_hash)
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
@@ -30,9 +30,7 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
 
-        user = User.query.filter_by(
-            email=email
-        ).first()
+        user = User.query.filter_by(email=email).first()
 
         if not user:
             return "Invalid Credentials"
@@ -40,7 +38,7 @@ def login():
         if user.status == "inactive":
             return "Account Disabled"
 
-        if check_password_hash(user.password,password):
+        if check_password_hash(user.password, password):
 
             login_user(user)
 
@@ -56,7 +54,6 @@ def login():
         return "Invalid Credentials"
 
     return render_template("login.html")
-    
 
 
 @app.route("/admin")
@@ -64,7 +61,34 @@ def login():
 def admin_dashboard():
     if current_user.role != "admin":
         return "Access Denied!"
-    return render_template("admin_dashboard.html")
+
+    total_users = User.query.filter_by(role="user").count()
+
+    total_staff = User.query.filter_by(role="staff").count()
+
+    total_treks = Trek.query.count()
+    total_bookings = Booking.query.count()
+
+    treks = Trek.query.all()
+    chart_labels = []
+    chart_values = []
+    for trek in treks:
+        chart_labels.append(
+            trek.name
+        )
+        chart_values.append(
+            len(trek.bookings)
+        )
+
+    return render_template(
+        "admin_dashboard.html",
+        total_users=total_users,
+        total_staff=total_staff,
+        total_treks=total_treks,
+        total_bookings=total_bookings,
+        chart_labels = chart_labels,
+        chart_values = chart_values
+    )
 
 
 @app.route("/staff")
@@ -72,35 +96,33 @@ def admin_dashboard():
 def staff_dashboard():
     if current_user.role != "staff":
         return "Access Denied!"
-    treks = Trek.query.filter_by(
-        staff_id = current_user.id
-    ).all()
+    treks = Trek.query.filter_by(staff_id=current_user.id).all()
 
-    return render_template("staff_dashboard.html",treks = treks)
+    return render_template("staff_dashboard.html", treks=treks)
+
 
 @app.route("/staff/treks/<int:id>")
 @login_required
 def view_participants(id):
     if current_user.role != "staff":
         return "Access Denied!"
-    
+
     trek = Trek.query.get_or_404(id)
     if trek.staff_id != current_user.id:
         return "Not Authorized"
-    bookings = Booking.query.filter_by(
-        trek_id =id
-    ).all()
+    bookings = Booking.query.filter_by(trek_id=id).all()
 
-    print("BOOKED",bookings)
+    print("BOOKED", bookings)
 
-    return render_template("staff_participants.html",trek=trek,bookings=bookings)
+    return render_template("staff_participants.html", trek=trek, bookings=bookings)
+
 
 @app.route("/staff/request/<int:id>")
 @login_required
 def request_assignment(id):
     if current_user.role != "staff":
         return "Access Denied!"
-    
+
     trek = Trek.query.get_or_404(id)
     if trek.staff_id != current_user.id:
         return "Not Authorized"
@@ -108,6 +130,7 @@ def request_assignment(id):
 
     db.session.commit()
     return redirect(url_for("staff_dashboard"))
+
 
 @app.route("/staff/trek/start/<int:id>")
 @login_required
@@ -123,6 +146,7 @@ def start_trek(id):
     db.session.commit()
     return redirect(url_for("staff_dashboard"))
 
+
 @app.route("/staff/trek/complete/<int:id>")
 @login_required
 def complete_trek(id):
@@ -137,17 +161,14 @@ def complete_trek(id):
     return redirect(url_for("staff_dashboard"))
 
 
-
 @app.route("/user")
 @login_required
 def user_dashboard():
     if current_user.role != "user":
         return "Access Denied!"
-    treks = Trek.query.filter(
-        Trek.status == "Open",
-        Trek.available_slots > 0
-    ).all()
-    return render_template("user_dashboard.html",treks=treks)
+    treks = Trek.query.filter(Trek.status == "Open", Trek.available_slots > 0).all()
+    return render_template("user_dashboard.html", treks=treks)
+
 
 @app.route("/book/<int:id>")
 @login_required
@@ -155,35 +176,31 @@ def book_trek(id):
     if current_user.role != "user":
         return "Users Only!"
     trek = Trek.query.get_or_404(id)
-    
+
     existing_booking = Booking.query.filter_by(
-        user_id = current_user.id,
-        trek_id = trek.id
+        user_id=current_user.id, trek_id=trek.id
     ).first()
-        
+
     if existing_booking:
         return "Already Booked"
-    
+
     if trek.available_slots <= 0:
         return "No slots Available"
-    booking = Booking(
-        user_id = current_user.id,
-        trek_id = trek.id
-    )
+    booking = Booking(user_id=current_user.id, trek_id=trek.id)
     trek.available_slots -= 1
     db.session.add(booking)
     db.session.commit()
     return redirect(url_for("user_dashboard"))
+
 
 @app.route("/my-bookings")
 @login_required
 def my_bookings():
     if current_user.role != "user":
         return "Access Denied!"
-    bookings = Booking.query.filter_by(
-        user_id = current_user.id
-    ).all()
-    return render_template("my_bookings.html",bookings=bookings)
+    bookings = Booking.query.filter_by(user_id=current_user.id).all()
+    return render_template("my_bookings.html", bookings=bookings)
+
 
 @app.route("/cancel-booking/<int:id>")
 @login_required
@@ -195,7 +212,7 @@ def cancel_booking(id):
     if booking.user_id != current_user.id:
         return "Unauthorized"
     trek = booking.trek
-    trek.available_slots +=1
+    trek.available_slots += 1
     db.session.delete(booking)
     db.session.commit()
 
@@ -216,16 +233,16 @@ def register():
         email = request.form.get("email")
         password = request.form.get("password")
         if len(password) < 8:
-           return "Password must be at least 8 characters"
+            return "Password must be at least 8 characters"
 
         if password.isalpha():
-          return "Password should include numbers"
+            return "Password should include numbers"
 
         existing_user = User.query.filter_by(email=email).first()
 
         if existing_user:
             return "User Already Exists"
-        
+
         hashed_password = generate_password_hash(password)
 
         user = User(name=name, email=email, password=password, role="user")
@@ -275,14 +292,12 @@ def view_staff():
     search = request.args.get("search")
     if search:
         staff = User.query.filter(
-            User.role == "staff",
-            User.name.contains(search)
+            User.role == "staff", User.name.contains(search)
         ).all()
     else:
         staff = User.query.filter_by(role="staff").all()
 
-    return render_template("admin_staff.html", staff=staff)    
-    
+    return render_template("admin_staff.html", staff=staff)
 
 
 @app.route("/admin/staff/toggle/<int:id>")
@@ -302,8 +317,7 @@ def toggle_staff(id):
 
     db.session.commit()
 
-    return redirect(url_for("view_staff"))        
-
+    return redirect(url_for("view_staff"))
 
 
 @app.route("/admin/treks", methods=["GET", "POST"])
@@ -313,11 +327,9 @@ def view_treks():
         return "Access Denied!"
     search = request.args.get("search")
     if search:
-        treks = Trek.query.filter(
-            Trek.name.contains(search)
-        ).all()
+        treks = Trek.query.filter(Trek.name.contains(search)).all()
     else:
-        treks = Trek.query.all()    
+        treks = Trek.query.all()
     return render_template("admin_treks.html", treks=treks)
 
 
@@ -344,7 +356,7 @@ def create_trek():
             available_slots=int(slots),
             staff_id=int(staff_id),
             status="Open",
-            image = request.form.get("image")
+            image=request.form.get("image"),
         )
         db.session.add(trek)
         db.session.commit()
@@ -378,10 +390,7 @@ def edit_trek(id):
 
         if selected_staff:
             trek.staff_id = int(selected_staff)
-            if(
-                old_staff != trek.staff_id
-                and trek.status == "Guide Change Requested"
-            ):
+            if old_staff != trek.staff_id and trek.status == "Guide Change Requested":
                 trek.status = "Open"
         else:
             trek.staff_id = None
@@ -407,10 +416,20 @@ def delete_trek(id):
 
     return redirect(url_for("view_treks"))
 
+
 @app.route("/about")
 @login_required
 def about_site():
     return render_template("about.html")
+
+
+@app.route("/trek/<int:id>")
+@login_required
+def trek_details(id):
+    if current_user.role != "user":
+        return "Access Denied!"
+    trek = Trek.query.get_or_404(id)
+    return render_template("trek_details.html", trek=trek)
 
 
 if __name__ == "__main__":

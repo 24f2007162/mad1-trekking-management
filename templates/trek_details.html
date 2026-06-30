@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="trek-card trek-details-card">
+
+<img
+class="trek-image"
+src="{{ url_for(
+'static',
+filename='images/' + (trek.image or 'default-trek.jpg')
+) }}"
+/>
+
+<div class="trek-info">
+
+<h1>
+
+{{ trek.name }}
+
+</h1>
+
+<p>
+
+📍 {{ trek.location }}
+
+</p>
+
+<p>
+
+⛰ Difficulty:
+{{ trek.difficulty }}
+
+</p>
+
+<p>
+
+🎟 Available:
+{{ trek.available_slots }}
+
+</p>
+
+<p>
+
+🧭 Guide:
+
+{{ trek.staff.name if trek.staff else "Guide Coming Soon" }}
+
+</p>
+
+<p>
+
+{{ trek.description }}
+
+</p>
+
+<a
+class="book-btn"
+href="/book/{{ trek.id }}"
+
+>
+
+Book This Trek
+
+</a>
+
+</div>
+
+</div>
+
+{% endblock %}

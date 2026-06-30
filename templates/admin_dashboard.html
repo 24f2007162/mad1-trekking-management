@@ -2,70 +2,267 @@
 
 {% block content %}
 
-<h1>Admin Dashboard</h1>
+<div class="admin-hero">
+
+  <h1>
+
+    Admin Dashboard
+
+  </h1>
+
+  <p>
+
+    Manage treks, staff and users
+
+  </p>
+
+</div>
+
+<div class="stats-grid">
+
+  <div class="stat-card">
+
+    <h2>
+
+      {{ total_users }}
+
+    </h2>
+
+    <p>
+
+      Trekkers
+
+    </p>
+
+  </div>
+
+  <div class="stat-card">
+
+    <h2>
+
+      {{ total_staff }}
+
+    </h2>
+
+    <p>
+
+      Staff
+
+    </p>
+
+  </div>
+
+  <div class="stat-card">
+
+    <h2>
+
+      {{ total_treks }}
+
+    </h2>
+
+    <p>
+
+      Treks
+
+    </p>
+
+  </div>
+
+  <div class="stat-card">
+
+    <h2>
+
+      {{ total_bookings }}
+
+    </h2>
+
+    <p>
+
+      Bookings
+
+    </p>
+
+  </div>
+
+</div>
 
 <div class="dashboard-grid">
 
-<a class="dashboard-card"
-href="/admin/users">
+  <a class="dashboard-card" href="/admin/users">
 
-👥
+    👥
 
-View Users
+    <h2>
 
-Manage registered users
+      View Users
 
-</a>
-<br><br>
+    </h2>
 
-<a class="dashboard-card"
-href="/admin/treks">
+    <p>
 
-🏔
+      Manage registered users
 
-View Treks
+    </p>
 
-Monitor trek activity
+  </a>
 
-</a>
-<br><br>
+  <a class="dashboard-card" href="/admin/treks">
 
-<a class="dashboard-card"
-href="/admin/treks/create">
+    🏔
 
-➕
+    <h2>
 
-Create Treks
+      View Treks
 
-Add new adventures
+    </h2>
 
-</a>
-<br><br>
+    <p>
 
-<a class="dashboard-card"
-href="/admin/staff/create">
+      Monitor trek activity
 
-🧭
+    </p>
 
-Add Staff
+  </a>
 
-Assign trek guides
+  <a class="dashboard-card" href="/admin/treks/create">
 
-</a>
-<br><br>
+    ➕
 
-<a class="dashboard-card"
-href="/admin/staff">
+    <h2>
 
-📋
+      Create Treks
 
-View Staff
+    </h2>
 
-Track guide assignments
+    <p>
 
-</a>
-<br><br>
+      Add new adventures
+
+    </p>
+
+  </a>
+
+  <a class="dashboard-card" href="/admin/staff/create">
+
+    🧭
+
+    <h2>
+
+      Add Staff
+
+    </h2>
+
+    <p>
+
+      Assign trek guides
+
+    </p>
+
+  </a>
+
+  <a class="dashboard-card" href="/admin/staff">
+
+    📋
+
+    <h2>
+
+      View Staff
+
+    </h2>
+
+    <p>
+
+      Track guide assignments
+
+    </p>
+
+  </a>
 
 </div>
+
+<div class="chart-box">
+
+  <h2>
+
+    Bookings per Trek
+
+  </h2>
+
+  <canvas id="bookingChart"></canvas>
+
+</div>
+
+<div class="chart-box">
+
+  <h2>
+
+    Bookings per Trek
+
+  </h2>
+
+  <canvas id="bookingChart"></canvas>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+<script>
+
+  const labels =
+    JSON.parse(
+      '{{ chart_labels|tojson|safe }}'
+    );
+
+  const values =
+    JSON.parse(
+      '{{ chart_values|tojson|safe }}'
+    );
+
+  const ctx =
+    document
+      .getElementById(
+        "bookingChart"
+      );
+
+  new Chart(
+
+    ctx,
+
+    {
+
+      type: "bar",
+
+      data: {
+
+        labels: labels,
+
+        datasets: [
+
+          {
+
+            label: "Bookings",
+
+            data: values
+
+          }
+
+        ]
+
+      },
+
+      options: {
+
+        responsive: true
+
+      }
+
+    }
+
+  );
+
+</script>
+
 
 {% endblock %}

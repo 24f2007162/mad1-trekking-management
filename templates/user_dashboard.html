@@ -32,8 +32,10 @@ filename='images/' + (trek.image or 'default-trek.jpg')
       <p>🧭 Guide: {{ trek.staff.name if trek.staff else "Guide Coming Soon" }}</p>
       <p>🎟 Slots: {{ trek.available_slots }}</p>
 
-      <a class="book-btn" href="/book/{{ trek.id }}">
-        Book Now
+      <a class="book-btn" href="/trek/{{ trek.id }}">
+
+        View Details
+
       </a>
 
     </div>
@@ -41,7 +43,29 @@ filename='images/' + (trek.image or 'default-trek.jpg')
   </div>
   {% endfor %}
 
-  <a class="book-btn" href="/my-bookings">View Bookings</a>
+</div>
+
+<div
+style="
+text-align:center;
+margin-top:50px;
+"
+>
+
+<a
+href="/my-bookings"
+style="
+background:red;
+padding:20px;
+display:inline-block;
+color:white;
+"
+
+>
+
+VIEW  BOOKINGS
+
+</a>
 
 </div>
 

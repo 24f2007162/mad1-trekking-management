@@ -1,70 +1,212 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h1>Assigned treks</h1>
 
-<table border="1">
-  <tr>
-    <th>Name</th>
-    <th>location</th>
-    <th>Difficulty</th>
-    <th>Booked</th>
-    <th>Remaining</th>
-    <th>Occupancy</th>
-    <th>Status</th>
-    <th>Participants</th>
-    <th>Action</th>
-    <th>Status Update</th>
-  </tr>
+<div class="admin-hero">
 
-  {% for trek in treks %}
-  <tr>
-    <td>{{trek.name}}</td>
-    <td>{{trek.location}}</td>
-    <td>{{trek.difficulty}}</td>
-    <td>
-      {{trek.bookings|length}}
-    </td>
-    <td>{{trek.available_slots}}</td>
-    <td>
-      {% set total = trek.bookings|length + trek.available_slots%}
-      {% if total > 0 %}
-      {{(((trek.bookings|length / total)*100)|round(0)|int)}}%
-      {% else %}
-      0%
-      {% endif %}
-    </td>
-    <td>{% if trek.available_slots == 0 %}
-      FULL
-      {% else %}
-      {{trek.status}}
-      {% endif %}
-    </td>
-    <td>
+  <h1>
 
-      <a href="/staff/treks/{{trek.id}}">View Users</a>
+    Musafir Operations Panel
 
-    </td>
-    <td>
-      {% if trek.status != "Guide Change Requested"%}
-      <a href = "/staff/request/{{trek.id}}">Request Reassignment</a>
-      {%else%}
-      Pending
-      {% endif %}
-    </td>
-    <td>
-      {% if trek.status == "Open" %}
-      <a href = "/staff/trek/start/{{trek.id}}">Start Trek</a>
-      {% elif trek.status == "Ongoing" %}
-      <a href = "/staff/trek/complete/{{trek.id}}">Mark Completed</a>
-      {% elif trek.status == "Completed"%}
-      Completed
-      {%else%}
-      -
-      {% endif %}
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+  </h1>
 
+  <p>
+
+    Track occupancy, manage treks and update progress
+
+  </p>
+
+</div>
+
+<div class="dashboard-grid">
+
+  <div class="dashboard-card">
+
+    <h2>
+
+      {{ treks|length }}
+
+    </h2>
+
+    <p>
+
+      Assigned Treks
+
+    </p>
+
+  </div>
+
+</div>
+
+<div class="table-wrapper">
+
+  <table>
+
+    <tr>
+
+      <th>Trek</th>
+
+      <th>Booked</th>
+
+      <th>Remaining</th>
+
+      <th>Occupancy</th>
+
+      <th>Status</th>
+
+      <th>Participants</th>
+
+      <th>Guide</th>
+
+      <th>Progress</th>
+
+    </tr>
+
+    {% for trek in treks %}
+
+    <tr>
+
+      <td>
+
+        <div class="staff-trek">
+
+          <img class="staff-thumb" src="{{ url_for(
+'static',
+filename='images/' + (trek.image or 'default-trek.jpg')
+) }}" />
+
+          <div>
+
+            <strong>
+
+              {{ trek.name }}
+
+            </strong>
+
+            <br>
+
+            {{ trek.location }}
+
+            <br>
+
+            {{ trek.difficulty }}
+
+          </div>
+
+        </div>
+
+      </td>
+
+      <td>
+
+        {{ trek.bookings|length }}
+
+      </td>
+
+      <td>
+
+        {{ trek.available_slots }}
+
+      </td>
+
+      <td>
+
+        {% set total = trek.bookings|length + trek.available_slots %}
+
+        {% if total>0 %}
+
+        {{ (((trek.bookings|length/total)*100)|round(0)|int) }}%
+
+        {% else %}
+
+        0%
+
+        {% endif %}
+
+      </td>
+
+      <td>
+
+        {% if trek.available_slots==0 %}
+
+        <span class="status-full">
+
+          FULL
+
+        </span>
+
+        {% else %}
+
+        <span class="status-open">
+
+          {{ trek.status }}
+
+        </span>
+
+        {% endif %}
+
+      </td>
+
+      <td>
+
+        <a class="table-btn" href="/staff/treks/{{trek.id}}">
+
+          Trek Participants
+
+        </a>
+
+      </td>
+
+      <td>
+
+        {% if trek.status!="Guide Change Requested"%}
+
+        <a class="table-btn" href="/staff/request/{{trek.id}}">
+
+          Request Guide Re-assignment
+
+        </a>
+
+        {% else %}
+
+        Pending
+
+        {% endif %}
+
+      </td>
+
+      <td>
+
+        {% if trek.status=="Open" %}
+
+        <a class="table-btn green" href="/staff/trek/start/{{trek.id}}">
+
+          Start
+
+        </a>
+
+        {% elif trek.status=="Ongoing" %}
+
+        <a class="table-btn blue" href="/staff/trek/complete/{{trek.id}}">
+
+          Complete
+
+        </a>
+
+        {% else %}
+
+        Completed
+
+        {% endif %}
+
+      </td>
+
+    </tr>
+
+    {% endfor %}
+
+  </table>
+
+</div>
 
 {% endblock %}
