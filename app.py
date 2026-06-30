@@ -101,12 +101,12 @@ def staff_dashboard():
 
         total = booked + trek.available_slots
         if total > 0:
-            occupancy = round((booked/total)*100)
+            occupancy = round((booked / total) * 100)
         else:
             occupancy = 0
 
         labels.append(trek.name)
-        values.append(occupancy)       
+        values.append(occupancy)
 
     return render_template(
         "staff_dashboard.html", treks=treks, chart_labels=labels, chart_values=values
@@ -264,50 +264,30 @@ def register():
         return redirect(url_for("login"))
     return render_template("register.html")
 
-@app.route(
-"/forgot-password",
-methods=["GET","POST"]
-)
 
+@app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
 
-    if request.method=="POST":
+    if request.method == "POST":
 
-        email =  request.form.get(
-            "email"
-        )
-       
+        email = request.form.get("email")
 
-        password = request.form.get(
-            "password"
-        )
-        
+        password = request.form.get("password")
 
-        user = User.query.filter_by(
-            email=email
-        ).first()
-        
+        user = User.query.filter_by(email=email).first()
 
         if not user:
 
             return "User not found"
 
-        user.password = generate_password_hash(
-            password
-        )
+        user.password = generate_password_hash(password)
 
-        
         db.session.commit()
 
-        return redirect(
-            url_for(
-                "login"
-            )
-        )
+        return redirect(url_for("login"))
 
-    return render_template(
-        "forgot_password.html"
-    )
+    return render_template("forgot_password.html")
+
 
 @app.route("/admin/staff/create", methods=["GET", "POST"])
 @login_required
@@ -487,38 +467,117 @@ def trek_details(id):
     trek = Trek.query.get_or_404(id)
     return render_template("trek_details.html", trek=trek)
 
-@app.route("/recommend",methods = ["GET","POST"])
+
+@app.route("/recommend", methods=["GET", "POST"])
 @login_required
 def recommend():
+
     if current_user.role != "user":
-        return "Access Denied !"
+        return "Access Denied!"
+
     recommendation = None
+    reason = ""
 
     if request.method == "POST":
+
         difficulty = request.form.get("difficulty")
         location = request.form.get("location")
+
         treks = Trek.query.all()
 
+        previous_bookings = Booking.query.filter_by(
+            user_id=current_user.id
+        ).all()
+
+        booked_ids = []
+
+        for booking in previous_bookings:
+
+            booked_ids.append(
+                booking.trek_id
+            )
+
         best_score = -1
+
         for trek in treks:
+
+            # Skip already booked treks
+            if trek.id in booked_ids:
+                continue
+
             score = 0
+
+            # LOCATION MATCH
+            location_match = (
+                location.lower()
+                in
+                trek.location.lower()
+            )
+
+            # USER INPUT
+
             if trek.difficulty == difficulty:
-                score += 2
-            if location.lower() in trek.location.lower():
-                score += 1
+                score += 4
+
+            if location_match:
+                score += 6
+
+
+            # TREK STATE
+
             if trek.status == "Open":
-                score += 1
+                score += 2
+
             if trek.available_slots > 0:
-                score += 1
-            if score > best_score:
+                score += 2
+
+
+            # HISTORY
+
+            for booking in previous_bookings:
+
+                if booking.trek:
+
+                    if booking.trek.difficulty == trek.difficulty:
+
+                        score += 2
+
+                    if (
+                        booking.trek.location.lower()
+                        ==
+                        trek.location.lower()
+                    ):
+
+                        score += 1
+
+
+            # PICK BEST
+
+            if (
+                score > best_score
+                or
+                (
+                    score == best_score
+                    and location_match
+                )
+            ):
+
                 best_score = score
+
                 recommendation = trek
 
-    return render_template("recommend.html",recommendation = recommendation)        
 
+        if recommendation:
 
+            reason = (
+                "Matched current preferences and booking history"
+            )
 
-
+    return render_template(
+        "recommend.html",
+        recommendation=recommendation,
+        reason=reason
+    )
 
 
 if __name__ == "__main__":
