@@ -97,9 +97,16 @@ def staff_dashboard():
     labels = []
     values = []
     for trek in treks:
-        labels.append(trek.name)
+        booked = len(trek.bookings)
 
-        values.append(len(trek.bookings))
+        total = booked + trek.available_slots
+        if total > 0:
+            occupancy = round((booked/total)*100)
+        else:
+            occupancy = 0
+
+        labels.append(trek.name)
+        values.append(occupancy)       
 
     return render_template(
         "staff_dashboard.html", treks=treks, chart_labels=labels, chart_values=values

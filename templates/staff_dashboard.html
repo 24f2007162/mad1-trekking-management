@@ -255,7 +255,7 @@ filename='images/' + (trek.image or 'default-trek.jpg')
 
           {
 
-            label: "Participants",
+            label: "Occupancy %",
 
             data: values
 
@@ -267,7 +267,18 @@ filename='images/' + (trek.image or 'default-trek.jpg')
 
       options: {
 
-        responsive: true
+        responsive: true,
+        scales: {
+
+          y: {
+
+            beginAtZero: true,
+
+            max: 100
+
+          }
+
+        }
 
       }
 
