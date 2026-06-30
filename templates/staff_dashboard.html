@@ -209,4 +209,72 @@ filename='images/' + (trek.image or 'default-trek.jpg')
 
 </div>
 
+<div class="chart-box">
+
+  <h2>
+
+    Participants Per Trek
+
+  </h2>
+
+  <canvas id="staffChart"></canvas>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+
+  const labels =
+    JSON.parse(
+      '{{ chart_labels|tojson|safe }}'
+    );
+
+  const values =
+    JSON.parse(
+      '{{ chart_values|tojson|safe }}'
+    );
+
+  new Chart(
+
+    document.getElementById(
+      "staffChart"
+    ),
+
+    {
+
+      type: "bar",
+
+      data: {
+
+        labels: labels,
+
+        datasets: [
+
+          {
+
+            label: "Participants",
+
+            data: values
+
+          }
+
+        ]
+
+      },
+
+      options: {
+
+        responsive: true
+
+      }
+
+    }
+
+  );
+
+</script>
+
 {% endblock %}

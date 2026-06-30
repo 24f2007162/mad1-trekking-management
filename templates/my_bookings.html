@@ -6,19 +6,18 @@
 
 <h1>
 
-My Treks
+My Bookings
 
 </h1>
 
 <p>
 
-Track your journeys and upcoming adventures
+Track your trek journey
 
 </p>
 
 </div>
 
-{% if bookings %}
 
 <div class="trek-grid">
 
@@ -30,7 +29,8 @@ Track your journeys and upcoming adventures
 class="trek-image"
 src="{{ url_for(
 'static',
-filename='images/' + (booking.trek.image or 'default-trek.jpg')
+filename='images/' +
+(booking.trek.image or 'default-trek.jpg')
 ) }}"
 />
 
@@ -50,76 +50,70 @@ filename='images/' + (booking.trek.image or 'default-trek.jpg')
 
 <p>
 
-🎫 Booking ID:
+Booking ID:
 {{ booking.id }}
 
 </p>
 
-<p>
 
-🧭 Guide:
+<div class="timeline">
 
-{{ booking.trek.staff.name if booking.trek.staff else "Guide Coming Soon" }}
+<div class="step active">
 
-</p>
+Booked
 
-<p>
+</div>
 
-Status:
+<div
+class="
+step
+{% if booking.trek.status in ['Ongoing','Completed'] %}
+active
+{% endif %}
+"
+>
 
-{% if booking.trek.status=="Open" %}
+Ongoing
 
-<span>
+</div>
 
-Upcoming
-
-</span>
-
-{% elif booking.trek.status=="Ongoing" %}
-
-<span>
-
-Trek In Progress
-
-</span>
-
-{% elif booking.trek.status=="Completed" %}
-
-<span>
+<div
+class="
+step
+{% if booking.trek.status=='Completed' %}
+active
+{% endif %}
+"
+>
 
 Completed
 
-</span>
+</div>
 
-{% endif %}
+</div>
+
+
+<p>
+
+Current Status:
+
+<span class="status-open">
+
+{{ booking.trek.status }}
+
+</span>
 
 </p>
 
-{% if booking.trek.status=="Open" %}
 
 <a
-class="book-btn"
+class="table-btn"
 href="/cancel-booking/{{ booking.id }}"
-
 >
 
 Cancel Booking
 
 </a>
-
-{% else %}
-
-<a
-class="disabled-btn"
-href="#"
-
->
-
-Booking Locked
-
-</a>
-
-{% endif %}
 
 </div>
 
@@ -128,35 +122,5 @@ Booking Locked
 {% endfor %}
 
 </div>
-
-{% else %}
-
-<div class="empty-state">
-
-<h2>
-
-No bookings yet
-
-</h2>
-
-<p>
-
-Book your first trek and start exploring
-
-</p>
-
-<a
-class="book-btn"
-href="/user"
-
->
-
-Explore Treks
-
-</a>
-
-</div>
-
-{% endif %}
 
 {% endblock %}

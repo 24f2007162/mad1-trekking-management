@@ -73,12 +73,8 @@ def admin_dashboard():
     chart_labels = []
     chart_values = []
     for trek in treks:
-        chart_labels.append(
-            trek.name
-        )
-        chart_values.append(
-            len(trek.bookings)
-        )
+        chart_labels.append(trek.name)
+        chart_values.append(len(trek.bookings))
 
     return render_template(
         "admin_dashboard.html",
@@ -86,8 +82,8 @@ def admin_dashboard():
         total_staff=total_staff,
         total_treks=total_treks,
         total_bookings=total_bookings,
-        chart_labels = chart_labels,
-        chart_values = chart_values
+        chart_labels=chart_labels,
+        chart_values=chart_values,
     )
 
 
@@ -98,7 +94,16 @@ def staff_dashboard():
         return "Access Denied!"
     treks = Trek.query.filter_by(staff_id=current_user.id).all()
 
-    return render_template("staff_dashboard.html", treks=treks)
+    labels = []
+    values = []
+    for trek in treks:
+        labels.append(trek.name)
+
+        values.append(len(trek.bookings))
+
+    return render_template(
+        "staff_dashboard.html", treks=treks, chart_labels=labels, chart_values=values
+    )
 
 
 @app.route("/staff/treks/<int:id>")
@@ -245,13 +250,57 @@ def register():
 
         hashed_password = generate_password_hash(password)
 
-        user = User(name=name, email=email, password=password, role="user")
+        user = User(name=name, email=email, password=hashed_password, role="user")
         db.session.add(user)
         db.session.commit()
 
         return redirect(url_for("login"))
     return render_template("register.html")
 
+@app.route(
+"/forgot-password",
+methods=["GET","POST"]
+)
+
+def forgot_password():
+
+    if request.method=="POST":
+
+        email =  request.form.get(
+            "email"
+        )
+       
+
+        password = request.form.get(
+            "password"
+        )
+        
+
+        user = User.query.filter_by(
+            email=email
+        ).first()
+        
+
+        if not user:
+
+            return "User not found"
+
+        user.password = generate_password_hash(
+            password
+        )
+
+        
+        db.session.commit()
+
+        return redirect(
+            url_for(
+                "login"
+            )
+        )
+
+    return render_template(
+        "forgot_password.html"
+    )
 
 @app.route("/admin/staff/create", methods=["GET", "POST"])
 @login_required

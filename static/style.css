@@ -261,6 +261,34 @@ table tr:hover {
 
 }
 
+.password-box {
+
+  display: flex;
+
+  gap: 10px;
+
+  align-items: center;
+
+}
+
+.password-box input {
+
+  flex: 1;
+
+}
+
+.show-pass {
+
+  background: #2563eb;
+
+  padding: 14px;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+}
+
 .login-btn {
 
   padding: 18px;
@@ -270,6 +298,28 @@ table tr:hover {
   color: white;
 
   border-radius: 12px;
+
+}
+
+.register-link {
+
+  text-align: center;
+
+  margin-top: 15px;
+
+}
+
+.register-link a {
+
+  color: white;
+
+  font-weight: bold;
+
+}
+
+.register-link a:hover {
+
+  color: #dbeafe;
 
 }
 
@@ -598,6 +648,52 @@ table tr:hover {
   color: #dc2626;
 
   font-weight: bold;
+
+}
+
+/* ---------- BOOKING TIMELINE ---------- */
+
+.timeline {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-top: 25px;
+
+  margin-bottom: 25px;
+
+}
+
+.step {
+
+  flex: 1;
+
+  padding: 12px;
+
+  margin-right: 10px;
+
+  border-radius: 12px;
+
+  background: #e5e7eb;
+
+  text-align: center;
+
+  font-weight: bold;
+
+}
+
+.step:last-child {
+
+  margin-right: 0;
+
+}
+
+.step.active {
+
+  background: #16a34a;
+
+  color: white;
 
 }
 
