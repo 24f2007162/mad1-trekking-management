@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="admin-hero">
+
+<h1>
+
+AI Trek Recommender
+
+</h1>
+
+<p>
+
+Find your ideal trek
+
+</p>
+
+</div>
+
+<div class="recommend-box">
+
+<form method="POST">
+
+<label>
+
+Difficulty
+
+</label>
+
+<select name="difficulty">
+
+<option>Easy</option>
+
+<option>Moderate</option>
+
+<option>Difficult</option>
+
+</select>
+
+<br><br>
+
+<label>
+
+Preferred Location
+
+</label>
+
+<input
+type="text"
+name="location"
+placeholder="Example: Uttarakhand"
+>
+
+<br><br>
+
+<button type="submit">
+
+Recommend Trek
+
+</button>
+
+</form>
+
+</div>
+
+{% if recommendation %}
+
+<div class="trek-card">
+
+<div class="trek-info">
+
+<h1>
+
+🏔 {{ recommendation.name }}
+
+</h1>
+
+<p>
+
+📍 {{ recommendation.location }}
+
+</p>
+
+<p>
+
+Difficulty:
+{{ recommendation.difficulty }}
+
+</p>
+
+<p>
+
+Guide:
+{{ recommendation.staff.name if recommendation.staff }}
+
+</p>
+
+<p>
+
+Slots:
+{{ recommendation.available_slots }}
+
+</p>
+
+<p>
+
+✨ Recommended because it best matches your preferences.
+
+</p>
+
+</div>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

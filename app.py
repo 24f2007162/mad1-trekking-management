@@ -487,6 +487,39 @@ def trek_details(id):
     trek = Trek.query.get_or_404(id)
     return render_template("trek_details.html", trek=trek)
 
+@app.route("/recommend",methods = ["GET","POST"])
+@login_required
+def recommend():
+    if current_user.role != "user":
+        return "Access Denied !"
+    recommendation = None
+
+    if request.method == "POST":
+        difficulty = request.form.get("difficulty")
+        location = request.form.get("location")
+        treks = Trek.query.all()
+
+        best_score = -1
+        for trek in treks:
+            score = 0
+            if trek.difficulty == difficulty:
+                score += 2
+            if location.lower() in trek.location.lower():
+                score += 1
+            if trek.status == "Open":
+                score += 1
+            if trek.available_slots > 0:
+                score += 1
+            if score > best_score:
+                best_score = score
+                recommendation = trek
+
+    return render_template("recommend.html",recommendation = recommendation)        
+
+
+
+
+
 
 if __name__ == "__main__":
 

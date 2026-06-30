@@ -452,6 +452,43 @@ table tr:hover {
 
 }
 
+.recommend-box{
+
+background:white;
+
+padding:40px;
+
+border-radius:20px;
+
+max-width:700px;
+
+margin:auto;
+
+box-shadow:
+0 8px 20px
+rgba(
+0,
+0,
+0,
+0.08
+);
+
+}
+
+.recommend-box input,
+.recommend-box select{
+
+width:100%;
+
+padding:15px;
+
+border-radius:10px;
+
+border:
+1px solid #ddd;
+
+}
+
 /* ---------- TREKS ---------- */
 
 .trek-grid {
