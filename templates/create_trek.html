@@ -1,44 +1,142 @@
 {% extends "base.html" %}
 
+{% block title %}
+Create Trek | Musafir Treks
+{% endblock %}
+
 {% block content %}
 
-<h1>Trek Creation Form</h1>
+<!-- ================= HERO ================= -->
 
-<form method="POST">
+<section class="admin-hero">
 
-  <input type="text" name="name" placeholder="Trek Name" required>
+    <h1>
+        Create New Trek
+    </h1>
 
-  <input type="text" name="location" placeholder="Location" required>
+    <p>
+        Add a new trekking adventure to the Musafir platform.
+    </p>
 
-  <input type="text" name="difficulty" placeholder="Difficulty" required>
+</section>
 
-  <input type="number" name="duration" placeholder="Duration of Trek" required>
+<!-- ================= FORM ================= -->
 
-  <input type="number" name="slots" placeholder="Slots Available" required>
-  <input type="text" name="image" placeholder="rajgad.jpg" />
+<section class="form-section">
 
-  <label>Assign Staff</label>
+    <div class="form-card">
 
-  <select name="staff_id">
+        <form method="POST">
 
-    <option value="">
-      Select Staff
-    </option>
+            <div class="form-grid">
 
-    {% for member in staff %}
+                <div class="form-group">
 
-    <option value="{{ member.id }}">
-      {{ member.name }}
-    </option>
+                    <label>Trek Name</label>
 
-    {% endfor %}
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Eg. Kedarkantha Trek"
+                        required>
 
-  </select>
+                </div>
 
-  <button type="submit">
-    Create Trek
-  </button>
+                <div class="form-group">
 
-</form>
+                    <label>Location</label>
+
+                    <input
+                        type="text"
+                        name="location"
+                        placeholder="Eg. Uttarakhand"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Difficulty</label>
+
+                    <input
+                        type="text"
+                        name="difficulty"
+                        placeholder="Easy / Moderate / Difficult"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Duration (Days)</label>
+
+                    <input
+                        type="number"
+                        name="duration"
+                        placeholder="4"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Available Slots</label>
+
+                    <input
+                        type="number"
+                        name="slots"
+                        placeholder="30"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Image Filename</label>
+
+                    <input
+                        type="text"
+                        name="image"
+                        placeholder="kedarkantha.jpg">
+
+                </div>
+
+                <div class="form-group full-width">
+
+                    <label>Assign Guide</label>
+
+                    <select name="staff_id">
+
+                        <option value="">
+                            Select Staff Member
+                        </option>
+
+                        {% for member in staff %}
+
+                        <option value="{{ member.id }}">
+                            {{ member.name }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn">
+
+                Create Trek
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
 
 {% endblock %}

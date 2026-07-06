@@ -1,73 +1,231 @@
 {% extends "base.html" %}
 
+{% block title %}
+Dashboard | Musafir Treks
+{% endblock %}
+
 {% block content %}
 
-<div class="hero">
-  <div class="hero-overlay">
-    <h1>Welcome to Musafir Treks</h1>
-    <p>Explore India, one trek at a time</p>
-    <div>
-      <h1>Available Treks</h1>
+<!-- ================= DASHBOARD HERO ================= -->
+
+<section class="dashboard-hero">
+
+    <div class="dashboard-overlay">
+
+        <div class="dashboard-content">
+
+            <p class="dashboard-small">
+                WELCOME BACK
+            </p>
+
+            <h1>
+                {{ current_user.name }}
+            </h1>
+
+            <p class="dashboard-subtitle">
+                Ready for your next adventure?
+            </p>
+
+            <p class="dashboard-description">
+                Discover breathtaking trekking destinations across India,
+                receive AI-powered recommendations,
+                book guided expeditions and create unforgettable memories.
+            </p>
+
+            <div class="dashboard-buttons">
+
+                <a href="{{ url_for('recommend') }}" class="hero-btn">
+                    🤖 AI Trek Planner
+                </a>
+
+                <a href="#treks" class="hero-btn secondary-btn">
+                    Explore Treks
+                </a>
+
+            </div>
+
+        </div>
+
     </div>
-  </div>
-</div>
+
+</section>
 
 
+<!-- ================= DASHBOARD STATS ================= -->
 
-<div class="trek-grid">
+<section class="stats-section">
 
-  {% for trek in treks %}
-  <div class="trek-card">
+    <div class="stat-card">
+        <h2>{{ treks|length }}</h2>
+        <p>Treks Available</p>
+    </div>
 
-    <img class="trek-image" src="{{ url_for(
-'static',
-filename='images/' + (trek.image or 'default-trek.jpg')
-) }}" />
+    <div class="stat-card">
+        <h2>25+</h2>
+        <p>Certified Guides</p>
+    </div>
 
-    <div class="trek-info">
+    <div class="stat-card">
+        <h2>1000+</h2>
+        <p>Happy Trekkers</p>
+    </div>
 
-      <h2>{{ trek.name }}</h2>
-      <p>📍 Location: {{ trek.location }}</p>
-      <p>⛰ Difficulty: {{ trek.difficulty }}</p>
-      <p>🧭 Guide: {{ trek.staff.name if trek.staff else "Guide Coming Soon" }}</p>
-      <p>🎟 Slots: {{ trek.available_slots }}</p>
+    <div class="stat-card">
+        <h2>AI</h2>
+        <p>Smart Planner</p>
+    </div>
 
-      <a class="book-btn" href="/trek/{{ trek.id }}">
+</section>
 
-        View Details
 
-      </a>
+<!-- ================= QUICK ACTIONS ================= -->
+
+<section class="quick-actions">
+
+    <div class="action-card">
+
+        <div class="action-icon">
+            🤖
+        </div>
+
+        <h3>
+            AI Trek Planner
+        </h3>
+
+        <p>
+            Get personalized trekking recommendations based on your interests.
+        </p>
+
+        <a href="{{ url_for('recommend') }}">
+            Try Now →
+        </a>
 
     </div>
-  <a class="dashboard-card" href="/recommend">
 
-    🤖
 
-    AI Trek Recommender
+    <div class="action-card">
 
-  </a>
-  </div>
-  {% endfor %}
-  
+        <div class="action-icon">
+            📖
+        </div>
 
-</div>
+        <h3>
+            My Bookings
+        </h3>
 
-<div style="
-text-align:center;
-margin-top:50px;
-">
+        <p>
+            View and manage all your upcoming trekking adventures.
+        </p>
 
-  <a href="/my-bookings" style="
-background:red;
-padding:20px;
-display:inline-block;
-color:white;
-">
+        <a href="{{ url_for('my_bookings') }}">
+            View Bookings →
+        </a>
 
-    VIEW BOOKINGS
+    </div>
 
-  </a>
 
-</div>
+    <div class="action-card">
+
+        <div class="action-icon">
+            🏔
+        </div>
+
+        <h3>
+            Explore India
+        </h3>
+
+        <p>
+            Browse beautiful mountain trails from every corner of India.
+        </p>
+
+        <a href="#treks">
+            Browse Treks →
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- ================= TREKS ================= -->
+
+<section id="treks">
+
+    <h2 class="section-title">
+        Explore Treks
+    </h2>
+
+    <p class="section-subtitle">
+        Handpicked adventures waiting for you.
+    </p>
+
+    <div class="trek-grid">
+
+        {% for trek in treks %}
+
+        <div class="trek-card">
+
+            <img
+                class="trek-image"
+                src="{{ url_for('static', filename='images/' + (trek.image or 'default-trek.jpg')) }}"
+                alt="{{ trek.name }}">
+
+            <div class="trek-info">
+
+                <span class="difficulty-badge {{ trek.difficulty|lower }}">
+                    {{ trek.difficulty }}
+                </span>
+
+                <h2>
+                    {{ trek.name }}
+                </h2>
+
+                <p class="trek-description">
+
+                    {% if trek.description %}
+
+                        {{ trek.description[:120] }}
+                        {% if trek.description|length > 120 %}...{% endif %}
+
+                    {% else %}
+
+                        Experience one of India's most breathtaking trekking adventures with expert guides, scenic trails and unforgettable mountain views.
+
+                    {% endif %}
+
+                </p>
+
+                <div class="trek-meta">
+
+                    <p>📍 <strong>{{ trek.location }}</strong></p>
+
+                    <p>⏳ {{ trek.duration }} Days</p>
+
+                    <p>
+                        🧭
+                        {{ trek.staff.name if trek.staff else "Guide Coming Soon" }}
+                    </p>
+
+                    <p>
+                        🎟
+                        {{ trek.available_slots }} Slots Available
+                    </p>
+
+                </div>
+
+                <a class="book-btn"
+                   href="{{ url_for('trek_details', trek_id=trek.id) if false else '/trek/' ~ trek.id }}">
+                    View Trek →
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
 
 {% endblock %}

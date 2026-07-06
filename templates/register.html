@@ -1,38 +1,124 @@
-{%extends "base.html"%}
-{%block content%}
-<h1>Form Registration</h1>
-<form method = "POST">
+{% extends "base.html" %}
 
+{% block title %}
 
-  <input
-   type = "text"
-   name="name"
-   placeholder="Full name"
-   required
-  >
+Register | Musafir Treks
 
-  <input
-  type = "email"
-  name = "email"
-  placeholder="Email"
-  required
-  >
+{% endblock %}
 
-  <input
-   type = "password"
-   name = "password"
-   placeholder="Password"
-   required
-  
-  >
+{% block content %}
 
-  <button type="submit">Register</button>
+<div class="register-page">
 
+    <div class="register-left">
 
+        <p class="hero-small">
 
+            BEGIN YOUR ADVENTURE
 
-</form>
+        </p>
 
+        <h1>
 
+            Join Musafir
 
-{%endblock%}
+        </h1>
+
+        <p class="hero-subtitle">
+
+            Every journey begins with one step.
+
+        </p>
+
+        <p class="hero-description">
+
+            Create your account to explore India's most beautiful trekking
+            destinations, receive AI-powered trek recommendations,
+            book guided expeditions and manage all your adventures from one place.
+
+        </p>
+
+    </div>
+
+    <div class="register-card">
+
+        <h2>
+
+            Create Account
+
+        </h2>
+
+        <p class="login-text">
+
+            Register to begin your trekking journey.
+
+        </p>
+
+        <form method="POST">
+
+            <label>
+
+                Full Name
+
+            </label>
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Enter your full name"
+                required
+            >
+
+            <label>
+
+                Email
+
+            </label>
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+            >
+
+            <label>
+
+                Password
+
+            </label>
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Create a password"
+                required
+            >
+
+            <button
+                type="submit"
+                class="login-btn">
+
+                Create Account
+
+            </button>
+
+        </form>
+
+        <div class="login-links">
+
+            Already have an account?
+
+            <a href="{{ url_for('login') }}">
+
+                Login
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

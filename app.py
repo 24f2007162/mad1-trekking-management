@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import login_user, login_required, current_user, logout_user
 from extensions import db, login_manager
 from models import User, Trek, Booking
 import models
 from werkzeug.security import generate_password_hash, check_password_hash
+import requests
+from config import WEATHER_API_KEY
 
 app = Flask(__name__)
 
@@ -20,6 +22,122 @@ login_manager.login_view = "login"
 @login_manager.user_loader
 def user_loader(user_id):
     return User.query.get(int(user_id))
+
+
+LOCATION_MAP = {
+    "Uttarakhand": "Joshimath",
+    "Kashmir": "Srinagar",
+    "Himachal Pradesh": "Manali",
+    "Maharashtra": "Pune",
+    "Karnataka": "Chikmagalur",
+    "Ladakh":"Leh"
+}
+
+
+TREK_INFO = {
+    "Uttarakhand": {
+        "places": [
+            "Valley of Flowers National Park",
+            "Badrinath Temple",
+            "Hemkund Sahib",
+            "Joshimath",
+            "Auli",
+        ],
+        "food": ["Kafuli", "Aloo Ke Gutke", "Bal Mithai", "Chainsoo", "Jhangora Kheer"],
+    },
+    "Pune": {
+        "places": [
+            "Sinhagad Fort",
+            "Shaniwar Wada",
+            "Lonavala",
+            "Lavasa",
+            "Khadakwasla Dam",
+        ],
+        "food": [
+            "Misal Pav",
+            "Vada Pav",
+            "Bhakarwadi",
+            "Puran Poli",
+            "Sabudana Khichdi",
+        ],
+    },
+    "Kashmir": {
+        "places": ["Dal Lake", "Gulmarg", "Sonmarg", "Pahalgam", "Betaab Valley"],
+        "food": ["Rogan Josh", "Gushtaba", "Yakhni", "Kahwa", "Dum Aloo"],
+    },
+    "West Bengal": {
+        "places": [
+            "Tiger Hill",
+            "Batasia Loop",
+            "Darjeeling Mall Road",
+            "Peace Pagoda",
+        ],
+        "food": ["Momos", "Thukpa", "Darjeeling Tea", "Rosogolla", "Sandesh"],
+    },
+    "Himachal Pradesh": {
+        "places": [
+            "McLeod Ganj",
+            "Bhagsu Waterfall",
+            "Dalai Lama Temple",
+            "Triund Ridge",
+        ],
+        "food": ["Siddu", "Madra", "Babru", "Dham", "Chha Gosht"],
+    },
+    "Karnataka": {
+        "places": ["Jog Falls", "Agumbe", "Kodachadri Peak", "Kudremukh"],
+        "food": [
+            "Bisi Bele Bath",
+            "Mysore Pak",
+            "Neer Dosa",
+            "Ragi Mudde",
+            "Mangalore Buns",
+        ],
+    },
+}
+
+
+def get_weather(location):
+    try:
+        location = LOCATION_MAP.get(location, location)
+
+        url = (
+            f"https://api.openweathermap.org/data/2.5/weather"
+            f"?q={location}&appid={WEATHER_API_KEY}&units=metric"
+        )
+
+        response = requests.get(url)
+        data = response.json()
+
+        if response.status_code == 200:
+            return {
+                "temp": data["main"]["temp"],
+                "condition": data["weather"][0]["description"],
+                "icon": "https://openweathermap.org/img/wn/"
+                + data["weather"][0]["icon"]
+                + ".png",
+                "humidity": data["main"]["humidity"],
+                "wind": data["wind"]["speed"],
+            }
+
+    except Exception as e:
+        print("Weather error:", e)
+
+    return None
+
+
+def weather_insight(condition):
+    condition = condition.lower()
+
+    if "rain" in condition:
+        return "🌧 Rain expected — avoid risky trails"
+    elif "cloud" in condition:
+        return "☁ Mostly cloudy — good trekking conditions"
+    elif "clear" in condition:
+        return "🌤 Perfect visibility for trekking"
+    elif "snow" in condition:
+        return "❄ Snow conditions — high difficulty"
+    else:
+        return "⛰ Normal mountain conditions"
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -185,23 +303,33 @@ def user_dashboard():
 @app.route("/book/<int:id>")
 @login_required
 def book_trek(id):
+
     if current_user.role != "user":
         return "Users Only!"
+
     trek = Trek.query.get_or_404(id)
 
     existing_booking = Booking.query.filter_by(
-        user_id=current_user.id, trek_id=trek.id
+        user_id=current_user.id, trek_id=id
     ).first()
 
     if existing_booking:
-        return "Already Booked"
+        flash("You have already booked this trek.", "error")
+        return redirect(url_for("trek_details", id=id))
 
     if trek.available_slots <= 0:
-        return "No slots Available"
-    booking = Booking(user_id=current_user.id, trek_id=trek.id)
+        flash("No slots available for this trek.", "error")
+        return redirect(url_for("trek_details", id=id))
+
+    booking = Booking(user_id=current_user.id, trek_id=id)
+
     trek.available_slots -= 1
+
     db.session.add(booking)
     db.session.commit()
+
+    flash("Trek booked successfully!", "success")
+
     return redirect(url_for("user_dashboard"))
 
 
@@ -462,12 +590,31 @@ def about_site():
 @app.route("/trek/<int:id>")
 @login_required
 def trek_details(id):
+
     if current_user.role != "user":
         return "Access Denied!"
+
     trek = Trek.query.get_or_404(id)
-    return render_template("trek_details.html", trek=trek)
 
+    # Get weather data
+    weather = get_weather(trek.location)
 
+    print("Location:", trek.location)
+    print("Weather:", weather)
+
+    # Generate weather tip only if weather exists
+    weather_tip = None
+    if weather:
+        weather_tip = weather_insight(weather["condition"])
+
+    return render_template(
+        "trek_details.html",
+        trek=trek,
+        weather=weather,
+        attractions=TREK_INFO.get("places", []),
+        foods=TREK_INFO.get("food", []),
+        weather_tip=weather_tip
+    )
 @app.route("/recommend", methods=["GET", "POST"])
 @login_required
 def recommend():
@@ -475,108 +622,72 @@ def recommend():
     if current_user.role != "user":
         return "Access Denied!"
 
-    recommendation = None
+    recommendations = []
     reason = ""
+    places = []
+    foods = []
 
     if request.method == "POST":
 
-        difficulty = request.form.get("difficulty")
-        location = request.form.get("location")
+        difficulty = request.form.get("difficulty").strip().lower()
 
-        treks = Trek.query.all()
+        location = request.form.get("location").strip().lower()
 
-        previous_bookings = Booking.query.filter_by(
-            user_id=current_user.id
-        ).all()
+        previous_bookings = Booking.query.filter_by(user_id=current_user.id).all()
 
         booked_ids = []
 
         for booking in previous_bookings:
 
-            booked_ids.append(
-                booking.trek_id
-            )
+            booked_ids.append(booking.trek_id)
 
-        best_score = -1
+        treks = Trek.query.all()
 
         for trek in treks:
 
-            # Skip already booked treks
+            # Skip booked treks
             if trek.id in booked_ids:
                 continue
 
-            score = 0
+            # Match difficulty
+            if trek.difficulty.strip().lower() != difficulty:
+                continue
 
-            # LOCATION MATCH
-            location_match = (
-                location.lower()
-                in
-                trek.location.lower()
-            )
+            # Match location
+            if location not in trek.location.strip().lower():
+                continue
 
-            # USER INPUT
+            # Must be available
+            if trek.status == "Open" and trek.available_slots > 0:
 
-            if trek.difficulty == difficulty:
-                score += 4
+                recommendations.append(trek)
 
-            if location_match:
-                score += 6
+        if recommendations:
 
+            reason = "Showing all matching treks"
+            # Tourist attractions for the first recommended trek
+            top_trek = recommendations[0]
 
-            # TREK STATE
+            for key in TREK_INFO:
 
-            if trek.status == "Open":
-                score += 2
+                if key.lower() in top_trek.location.lower():
 
-            if trek.available_slots > 0:
-                score += 2
+                    print("MATCH FOUND!")
+                    places = TREK_INFO[key]["places"]
+                    foods = TREK_INFO[key]["food"]
 
+                    break
 
-            # HISTORY
+        else:
 
-            for booking in previous_bookings:
-
-                if booking.trek:
-
-                    if booking.trek.difficulty == trek.difficulty:
-
-                        score += 2
-
-                    if (
-                        booking.trek.location.lower()
-                        ==
-                        trek.location.lower()
-                    ):
-
-                        score += 1
-
-
-            # PICK BEST
-
-            if (
-                score > best_score
-                or
-                (
-                    score == best_score
-                    and location_match
-                )
-            ):
-
-                best_score = score
-
-                recommendation = trek
-
-
-        if recommendation:
-
-            reason = (
-                "Matched current preferences and booking history"
-            )
+            reason = "No matching treks found"
 
     return render_template(
         "recommend.html",
-        recommendation=recommendation,
-        reason=reason
+        recommendations=recommendations,
+        reason=reason,
+        places=places,
+        foods=foods,
     )
 
 

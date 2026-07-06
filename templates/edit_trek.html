@@ -1,48 +1,123 @@
 {% extends "base.html" %}
 
+{% block title %}
+Edit Trek | Musafir Treks
+{% endblock %}
+
 {% block content %}
 
-<h1>Edit Trek</h1>
+<!-- ================= HERO ================= -->
 
-<form method="POST">
+<section class="admin-hero">
 
-  <input name="name" value="{{ trek.name }}">
+  <h1>
 
-  <input name="location" value="{{ trek.location }}">
+    Edit Trek
 
-  <input name="difficulty" value="{{ trek.difficulty }}">
+  </h1>
 
-  <input type="number" name="duration" value="{{ trek.duration }}">
+  <p>
 
-  <input type="number" name="slots" value="{{ trek.available_slots }}">
-  <input type="text" name="image" value="{{ trek.image }}" />
+    Update trek information and guide assignment.
 
-  <label>Assign Staff</label>
+  </p>
 
-  <select name="staff_id">
+</section>
 
-    <option value="">
-      Unassign Staff
-    </option>
+<!-- ================= FORM ================= -->
 
-    {% for member in staff %}
+<section class="form-section">
 
-    <option value="{{member.id}}" {% if trek.staff_id==member.id %} selected {% endif %}>
+  <div class="form-card">
 
-      {{member.name}}
+    <form method="POST">
 
-    </option>
+      <div class="form-grid">
 
-    {% endfor %}
+        <div class="form-group">
 
-  </select>
+          <label>Trek Name</label>
 
-  <button>
+          <input type="text" name="name" value="{{ trek.name }}" required>
 
-    Update
+        </div>
 
-  </button>
+        <div class="form-group">
 
-</form>
+          <label>Location</label>
+
+          <input type="text" name="location" value="{{ trek.location }}" required>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>Difficulty</label>
+
+          <input type="text" name="difficulty" value="{{ trek.difficulty }}" required>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>Duration (Days)</label>
+
+          <input type="number" name="duration" value="{{ trek.duration }}" required>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>Available Slots</label>
+
+          <input type="number" name="slots" value="{{ trek.available_slots }}" required>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>Image Filename</label>
+
+          <input type="text" name="image" value="{{ trek.image }}">
+
+        </div>
+
+        <div class="form-group full-width">
+
+          <label>Assign Guide</label>
+
+          <select name="staff_id">
+
+            <option value="">
+              Unassign Staff
+            </option>
+
+            {% for member in staff %}
+
+            <option value="{{ member.id }}" {% if trek.staff_id==member.id %}selected{% endif %}>
+
+              {{ member.name }}
+
+            </option>
+
+            {% endfor %}
+
+          </select>
+
+        </div>
+
+      </div>
+
+      <button type="submit" class="btn">
+
+        Update Trek
+
+      </button>
+
+    </form>
+
+  </div>
+
+</section>
 
 {% endblock %}

@@ -1,49 +1,131 @@
-{%extends "base.html"%}
-{%block content%}
-<form method = "GET">
-  <input
-   type = "text"
-   name = "search"
-   placeholder="Search Staff"
-  >
-  <button>Search</button>
-</form>
-<br><br>
+{% extends "base.html" %}
 
-<h1>Staff Members</h1>
-<table border="1">
-  <tr>
-    <th>ID</th>
-    <th>Name</th>
-    <th>Email</th>
-    <th>Status</th>
-    <th>Action</th>
-  </tr>
-  {%for member in staff%}
-  <tr>
-    <td>{{member.id}}</td>
-    <td>{{member.name}}</td>
-    <td>{{member.email}}</td>
-    <td>{{member.status}}</td>
-    <td>
-      <a href="/admin/staff/toggle/{{member.id}}">
+{% block title %}
+Staff Management | Musafir Treks
+{% endblock %}
 
-        {% if member.status|lower == "active" %}
+{% block content %}
 
-        Deactivate
+<!-- ================= HERO ================= -->
 
-        {% else %}
+<section class="admin-hero">
 
-        Activate
+  <h1>
+    Staff Management
+  </h1>
 
-        {% endif %}
+  <p>
+    View, search and manage all trekking guides.
+  </p>
 
-      </a>
-    </td>
-  </tr>
-  {%endfor%}
-</table>
+</section>
 
 
+<!-- ================= SEARCH ================= -->
 
-{%endblock%}
+<section class="search-section">
+
+  <form method="GET" class="search-form">
+
+    <input type="text" name="search" placeholder="Search staff by name..." value="{{ request.args.get('search','') }}">
+
+    <button type="submit">
+      Search
+    </button>
+
+  </form>
+
+</section>
+
+
+<!-- ================= TABLE ================= -->
+
+<section class="table-section">
+
+  <div class="table-card">
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Action</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        {% for member in staff %}
+
+        <tr>
+
+          <td>{{ member.id }}</td>
+
+          <td>{{ member.name }}</td>
+
+          <td>{{ member.email }}</td>
+
+          <td>
+
+            {% if member.status|lower == "active" %}
+
+            <span class="status-open">
+
+              Active
+
+            </span>
+
+            {% else %}
+
+            <span class="status-closed">
+
+              Inactive
+
+            </span>
+
+            {% endif %}
+
+          </td>
+
+          <td>
+
+            {% if member.status|lower == "active" %}
+
+            <a class="table-btn danger-btn" href="/admin/staff/toggle/{{ member.id }}">
+
+              Deactivate
+
+            </a>
+
+            {% else %}
+
+            <a class="table-btn" href="/admin/staff/toggle/{{ member.id }}">
+
+              Activate
+
+            </a>
+
+            {% endif %}
+
+          </td>
+
+        </tr>
+
+        {% endfor %}
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+{% endblock %}

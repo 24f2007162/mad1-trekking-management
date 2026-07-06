@@ -1,71 +1,127 @@
 {% extends "base.html" %}
 
+{% block title %}{{ trek.name }} | Musafir{% endblock %}
+
 {% block content %}
 
-<div class="trek-card trek-details-card">
+<section class="td-page">
 
-<img
-class="trek-image"
-src="{{ url_for(
-'static',
-filename='images/' + (trek.image or 'default-trek.jpg')
-) }}"
-/>
+    <div class="td-container">
 
-<div class="trek-info">
+        <!-- LEFT IMAGE -->
 
-<h1>
+        <div class="td-media">
 
-{{ trek.name }}
+            <img class="td-image" src="{{ url_for('static',
+                    filename='images/' + (trek.image or 'default-trek.jpg')) }}" alt="{{ trek.name }}">
 
-</h1>
+        </div>
 
-<p>
+        <!-- RIGHT DETAILS -->
 
-📍 {{ trek.location }}
+        <div class="td-content">
 
-</p>
+            <span class="td-badge td-{{ trek.difficulty|lower }}">
+                {{ trek.difficulty }}
+            </span>
 
-<p>
+            <h1 class="td-title">
+                {{ trek.name }}
+            </h1>
 
-⛰ Difficulty:
-{{ trek.difficulty }}
+            <p class="td-meta">
+                📍 {{ trek.location }}
+            </p>
 
-</p>
+            <p class="td-meta">
+                ⏳ {{ trek.duration }} Days
+            </p>
 
-<p>
+            <p class="td-guide">
+                🧭 {{ trek.staff.name if trek.staff else "Guide Coming Soon" }}
+            </p>
 
-🎟 Available:
-{{ trek.available_slots }}
+            <p class="td-slots">
+                🎟 {{ trek.available_slots }} Slots Available
+            </p>
 
-</p>
+            {% if weather %}
 
-<p>
+            <div class="td-weather">
 
-🧭 Guide:
+                <h3 class="td-section-title">
+                    🌤 Live Weather
+                </h3>
 
-{{ trek.staff.name if trek.staff else "Guide Coming Soon" }}
+                <div class="td-weather-main">
 
-</p>
+                    <img class="td-weather-icon" src="{{ weather.icon }}">
 
-<p>
+                    <div>
 
-{{ trek.description }}
+                        <h2>
+                            {{ weather.temp }}°C
+                        </h2>
 
-</p>
+                        <p>
+                            {{ weather.condition }}
+                        </p>
 
-<a
-class="book-btn"
-href="/book/{{ trek.id }}"
+                    </div>
 
->
+                </div>
 
-Book This Trek
+                <div class="td-weather-stats">
 
-</a>
+                    <p>
+                        💧 Humidity: {{ weather.humidity }}%
+                    </p>
 
-</div>
+                    <p>
+                        💨 Wind: {{ weather.wind }} km/h
+                    </p>
 
-</div>
+                </div>
+
+                {% if weather_tip %}
+
+                <p class="td-weather-tip">
+
+                    {{ weather_tip }}
+
+                </p>
+
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+
+            <div class="td-description">
+
+                <h3 class="td-section-title">
+
+                    About Trek
+
+                </h3>
+
+                <p>
+
+                    {{ trek.description or
+                    "Experience breathtaking landscapes and unforgettable trekking adventure." }}
+
+                </p>
+
+            </div>
+
+            <a class="td-book-btn" href="{{ url_for('book_trek', id = trek.id) }}">
+                Book This Trek →
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
 
 {% endblock %}

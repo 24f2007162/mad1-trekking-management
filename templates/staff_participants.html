@@ -1,21 +1,108 @@
-{%extends "base.html" %}
+{% extends "base.html" %}
+
+{% block title %}
+Trek Participants | Musafir Treks
+{% endblock %}
+
 {% block content %}
-<h1>Assigned Trekkers and details</h1>
-<table border = "1">
-  <tr>
-    <th>Name</th>
-    <th>Email</th>
-  </tr>
-  {% for booking in bookings %}
-  <tr>
-   <td>{{booking.user.name}}</td>
-   <td>{{booking.user.email}}</td>
 
-  </tr>
-  {% endfor %}
+<!-- ================= HERO ================= -->
 
-</table>
+<section class="admin-hero">
+
+    <h1>
+
+        Trek Participants
+
+    </h1>
+
+    <p>
+
+        View all trekkers assigned to this expedition.
+
+    </p>
+
+</section>
 
 
+<!-- ================= PARTICIPANTS TABLE ================= -->
+
+<section class="table-section">
+
+    <div class="table-card">
+
+        {% if bookings %}
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+
+                    <th>Name</th>
+
+                    <th>Email</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for booking in bookings %}
+
+                <tr>
+
+                    <td>
+
+                        {{ loop.index }}
+
+                    </td>
+
+                    <td>
+
+                        {{ booking.user.name }}
+
+                    </td>
+
+                    <td>
+
+                        {{ booking.user.email }}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <h2>
+
+                No Participants Yet
+
+            </h2>
+
+            <p>
+
+                This trek currently has no confirmed bookings.
+
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
 
 {% endblock %}

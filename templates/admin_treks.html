@@ -1,44 +1,170 @@
-{%extends "base.html"%}
-{%block content%}
-<form method="GET">
-  <input type="text" name="search" placeholder="Search Trek">
-  <button>Search</button>
+{% extends "base.html" %}
+
+{% block title %}
+Manage Treks | Musafir
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-hero">
+
+    <h1>Manage Treks</h1>
+
+    <p>
+        View, search, edit and manage every trek in Musafir.
+    </p>
+
+</div>
 
 
-</form>
-<br><br>
-<h1>All Treks</h1>
-<table border="1">
-  <tr>
+<div class="table-toolbar">
+
+    <form method="GET" class="search-form">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search trek by name..."
+            value="{{ request.args.get('search','') }}"
+        >
+
+        <button type="submit">
+
+            Search
+
+        </button>
+
+    </form>
+
+</div>
+
+
+<div class="table-container">
+
+<table class="modern-table">
+
+<thead>
+
+<tr>
+
     <th>ID</th>
-    <th>Name</th>
+
+    <th>Trek</th>
+
     <th>Location</th>
+
     <th>Difficulty</th>
+
     <th>Slots</th>
+
     <th>Status</th>
-    <th>Assigned Staff</th>
-    <th>Edit-Details</th>
-    <th>Delete-Trek</th>
-  </tr>
-  {%for trek in treks%}
-  <tr>
-    <td>{{trek.id}}</td>
-    <td>{{trek.name}}</td>
-    <td>{{trek.location}}</td>
-    <td>{{trek.difficulty}}</td>
-    <td>{{trek.available_slots}}</td>
-    <td>{{trek.status}}</td>
-    <td>{%if trek.staff%}
-      {{trek.staff.name}}
-      {%else%}
-      Not Assigned
-      {%endif%}
+
+    <th>Guide</th>
+
+    <th>Edit</th>
+
+    <th>Delete</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for trek in treks %}
+
+<tr>
+
+    <td>{{ trek.id }}</td>
+
+    <td>
+
+        <strong>{{ trek.name }}</strong>
+
     </td>
-    <td><a href="/admin/treks/edit/{{trek.id}}">Edit</a></td>
-    <td><a href="/admin/treks/delete/{{trek.id}}">Delete</a></td>
-  </tr>
-  {%endfor%}
+
+    <td>
+
+        {{ trek.location }}
+
+    </td>
+
+    <td>
+
+        <span class="difficulty-badge {{ trek.difficulty|lower }}">
+
+            {{ trek.difficulty }}
+
+        </span>
+
+    </td>
+
+    <td>
+
+        {{ trek.available_slots }}
+
+    </td>
+
+    <td>
+
+        {% if trek.status=="Open" %}
+
+            <span class="status-open">
+                {{ trek.status }}
+            </span>
+
+        {% elif trek.status=="Ongoing" %}
+
+            <span class="status-progress">
+                {{ trek.status }}
+            </span>
+
+        {% else %}
+
+            <span class="status-closed">
+                {{ trek.status }}
+            </span>
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        {{ trek.staff.name if trek.staff else "Not Assigned" }}
+
+    </td>
+
+    <td>
+
+        <a
+            href="/admin/treks/edit/{{ trek.id }}"
+            class="table-btn edit-btn"
+        >
+            Edit
+        </a>
+
+    </td>
+
+    <td>
+
+        <a
+            href="/admin/treks/delete/{{ trek.id }}"
+            class="table-btn delete-btn"
+        >
+            Delete
+        </a>
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
 
 </table>
 
-{%endblock%}
+</div>
+
+{% endblock %}

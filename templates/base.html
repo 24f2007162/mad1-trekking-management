@@ -2,23 +2,226 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Musafir Treks</title>
-  <link rel="stylesheet" href="{{url_for('static',filename = 'style.css')}}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Musafir Treks{% endblock %}</title>
+
+    <!-- Google Font -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Marcellus&display=swap"
+          rel="stylesheet">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
 
 <body>
-  <div class="navbar">
-    <a href="/">Home</a>
-    {% if current_user.is_authenticated %}
-    <a href="/logout">Logout</a>
-    {% endif %}
-  </div>
-  <div class="container">
-    {% block content%}
-    {% endblock %}
-  </div>
+
+<header>
+
+<nav class="navbar">
+
+    <div class="logo">
+
+        <a href="{{ url_for('login') }}">
+
+            <i class="fa-solid fa-mountain-sun"></i>
+
+            <span>Musafir</span>
+
+        </a>
+
+    </div>
+
+    <ul class="nav-links">
+
+        {% if current_user.is_authenticated %}
+
+            {% if current_user.role=="user" %}
+
+                <li>
+
+                    <a href="{{ url_for('user_dashboard') }}">
+
+                        Dashboard
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="{{ url_for('recommend') }}">
+
+                        AI Planner
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="{{ url_for('my_bookings') }}">
+
+                        My Bookings
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="{{ url_for('about_site') }}">
+
+                        About
+
+                    </a>
+
+                </li>
+
+            {% elif current_user.role=="admin" %}
+
+                <li>
+
+                    <a href="{{ url_for('admin_dashboard') }}">
+
+                        Dashboard
+
+                    </a>
+
+                </li>
+
+            {% elif current_user.role=="staff" %}
+
+                <li>
+
+                    <a href="{{ url_for('staff_dashboard') }}">
+
+                        Dashboard
+
+                    </a>
+
+                </li>
+
+            {% endif %}
+
+            <li>
+
+                <a class="btn-nav"
+
+                   href="{{ url_for('logout') }}">
+
+                    Logout
+
+                </a>
+
+            </li>
+
+        {% else %}
+
+            <li>
+
+                <a href="{{ url_for('login') }}">
+
+                    Login
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a class="btn-nav"
+
+                   href="{{ url_for('register') }}">
+
+                    Register
+
+                </a>
+
+            </li>
+
+        {% endif %}
+
+    </ul>
+
+</nav>
+
+</header>
+
+{% with messages = get_flashed_messages(with_categories=True) %}
+
+{% if messages %}
+
+<div class="flash-container">
+
+    {% for category,message in messages %}
+
+        <div class="flash {{ category }}">
+
+            {{ message }}
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}
+
+{% endwith %}
+
+<main class="page-container">
+
+{% block content %}
+
+{% endblock %}
+
+</main>
+
+<footer>
+
+    <div class="footer-content">
+
+        <h2>
+
+            Musafir Treks
+
+        </h2>
+
+        <p>
+
+            Explore India • Trek Together • Travel Responsibly
+
+        </p>
+
+        <br>
+
+        <p>
+
+            © 2026 Musafir Treks
+
+        </p>
+
+    </div>
+
+</footer>
 
 </body>
 

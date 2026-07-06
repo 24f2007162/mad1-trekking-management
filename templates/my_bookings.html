@@ -1,126 +1,219 @@
 {% extends "base.html" %}
 
+{% block title %}
+My Bookings | Musafir Treks
+{% endblock %}
+
 {% block content %}
 
-<div class="admin-hero">
+<!-- ================= HERO ================= -->
 
-<h1>
+<section class="dashboard-hero">
 
-My Bookings
+    <div class="dashboard-overlay">
 
-</h1>
+        <div class="dashboard-content">
 
-<p>
+            <p class="dashboard-small">
 
-Track your trek journey
+                MY ADVENTURES
 
-</p>
+            </p>
 
-</div>
+            <h1>
 
+                My Bookings
 
-<div class="trek-grid">
+            </h1>
 
-{% for booking in bookings %}
+            <p class="dashboard-subtitle">
 
-<div class="trek-card">
+                Every adventure begins with a booking.
 
-<img
-class="trek-image"
-src="{{ url_for(
-'static',
-filename='images/' +
-(booking.trek.image or 'default-trek.jpg')
-) }}"
-/>
+            </p>
 
-<div class="trek-info">
+            <p class="dashboard-description">
 
-<h2>
+                Track your upcoming treks, monitor their progress and manage
+                your bookings from one place.
 
-{{ booking.trek.name }}
+            </p>
 
-</h2>
+        </div>
 
-<p>
+    </div>
 
-📍 {{ booking.trek.location }}
-
-</p>
-
-<p>
-
-Booking ID:
-{{ booking.id }}
-
-</p>
+</section>
 
 
-<div class="timeline">
+<!-- ================= BOOKINGS ================= -->
 
-<div class="step active">
+<section>
 
-Booked
+    <h2 class="section-title">
 
-</div>
+        Your Trek Bookings
 
-<div
-class="
-step
-{% if booking.trek.status in ['Ongoing','Completed'] %}
-active
-{% endif %}
-"
->
+    </h2>
 
-Ongoing
+    <p class="section-subtitle">
 
-</div>
+        {{ bookings|length }} Booking(s)
 
-<div
-class="
-step
-{% if booking.trek.status=='Completed' %}
-active
-{% endif %}
-"
->
+    </p>
 
-Completed
+    {% if bookings %}
 
-</div>
+    <div class="trek-grid">
 
-</div>
+        {% for booking in bookings %}
 
+        <div class="trek-card">
 
-<p>
+            <img class="trek-image"
+                 src="{{ url_for('static',
+                 filename='images/' + (booking.trek.image or 'default-trek.jpg')) }}">
 
-Current Status:
+            <div class="trek-info">
 
-<span class="status-open">
+                <span class="difficulty-badge {{ booking.trek.difficulty|lower }}">
 
-{{ booking.trek.status }}
+                    {{ booking.trek.difficulty }}
 
-</span>
+                </span>
 
-</p>
+                <h2>
 
+                    {{ booking.trek.name }}
 
-<a
-class="table-btn"
-href="/cancel-booking/{{ booking.id }}"
->
+                </h2>
 
-Cancel Booking
+                <div class="trek-meta">
 
-</a>
+                    <p>
 
-</div>
+                        📍 {{ booking.trek.location }}
 
-</div>
+                    </p>
 
-{% endfor %}
+                    <p>
 
-</div>
+                        ⏳ {{ booking.trek.duration }} Days
+
+                    </p>
+
+                    <p>
+
+                        🧭
+                        {{ booking.trek.staff.name if booking.trek.staff else "Guide Coming Soon" }}
+
+                    </p>
+
+                    <p>
+
+                        🎫 Booking ID :
+                        {{ booking.id }}
+
+                    </p>
+
+                </div>
+
+                <!-- Timeline -->
+
+                <div class="timeline">
+
+                    <div class="step active">
+
+                        Booked
+
+                    </div>
+
+                    <div class="step {% if booking.trek.status in ['Ongoing','Completed'] %}active{% endif %}">
+
+                        Ongoing
+
+                    </div>
+
+                    <div class="step {% if booking.trek.status == 'Completed' %}active{% endif %}">
+
+                        Completed
+
+                    </div>
+
+                </div>
+
+                <p class="booking-status">
+
+                    Status :
+
+                    <strong>
+
+                        {{ booking.trek.status }}
+
+                    </strong>
+
+                </p>
+
+                <div class="booking-buttons">
+
+                    <a class="book-btn"
+
+                       href="/trek/{{ booking.trek.id }}">
+
+                        View Trek
+
+                    </a>
+
+                    {% if booking.trek.status == "Open" %}
+
+                    <a class="cancel-btn"
+
+                       href="/cancel-booking/{{ booking.id }}">
+
+                        Cancel
+
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+
+        <h2>
+
+            🏔 No Bookings Yet
+
+        </h2>
+
+        <p>
+
+            Start your first trekking adventure today.
+
+        </p>
+
+        <a class="hero-btn"
+
+           href="{{ url_for('dashboard') }}">
+
+            Explore Treks
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</section>
 
 {% endblock %}

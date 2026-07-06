@@ -1,24 +1,112 @@
-{%extends "base.html"%}
-{%block content%}
- <h1>All Users</h1>
- <table border = "1">
-  <tr>
-    <th>ID</th>
-    <th>Name</th>
-    <th>Email</th>
-    <th>Role</th>
-    <th>Status</th>
-  </tr>
-  {%for user in users%}
-  <tr>
-    <td>{{user.id}}</td>
-    <td>{{user.name}}</td>
-    <td>{{user.email}}</td>
-    <td>{{user.role}}</td>
-    <td>{{user.status}}</td>
-  </tr>
-  {%endfor%}
- </table>
+{% extends "base.html" %}
+
+{% block title %}
+All Users | Musafir Treks
+{% endblock %}
+
+{% block content %}
+
+<!-- ================= HERO ================= -->
+
+<section class="admin-hero">
+
+  <h1>
+    All Registered Users
+  </h1>
+
+  <p>
+    Manage all trekkers registered on Musafir.
+  </p>
+
+</section>
 
 
-{%endblock%}
+<!-- ================= USERS TABLE ================= -->
+
+<section class="table-container">
+
+  <table>
+
+    <thead>
+
+      <tr>
+
+        <th>ID</th>
+
+        <th>Name</th>
+
+        <th>Email</th>
+
+        <th>Role</th>
+
+        <th>Status</th>
+
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      {% for user in users %}
+
+      <tr>
+
+        <td>{{ user.id }}</td>
+
+        <td>{{ user.name }}</td>
+
+        <td>{{ user.email }}</td>
+
+        <td>
+
+          {% if user.role == "admin" %}
+
+          <span class="role-admin">
+            Admin
+          </span>
+
+          {% elif user.role == "staff" %}
+
+          <span class="role-staff">
+            Staff
+          </span>
+
+          {% else %}
+
+          <span class="role-user">
+            User
+          </span>
+
+          {% endif %}
+
+        </td>
+
+        <td>
+
+          {% if user.status == "Active" %}
+
+          <span class="status-active">
+            {{ user.status }}
+          </span>
+
+          {% else %}
+
+          <span class="status-inactive">
+            {{ user.status }}
+          </span>
+
+          {% endif %}
+
+        </td>
+
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+
+  </table>
+
+</section>
+
+{% endblock %}

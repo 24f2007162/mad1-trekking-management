@@ -1,117 +1,259 @@
 {% extends "base.html" %}
 
+{% block title %}
+AI Trek Planner | Musafir Treks
+{% endblock %}
+
 {% block content %}
 
-<div class="admin-hero">
+<!-- ================= HERO ================= -->
 
-<h1>
+<section class="dashboard-hero">
 
-AI Trek Recommender
+    <div class="dashboard-overlay">
 
-</h1>
+        <div class="dashboard-content">
 
-<p>
+            <p class="dashboard-small">
 
-Find your ideal trek
+                AI POWERED
 
-</p>
+            </p>
 
-</div>
+            <h1>
 
-<div class="recommend-box">
+                Trek Recommendation
 
-<form method="POST">
+            </h1>
 
-<label>
+            <p class="dashboard-subtitle">
 
-Difficulty
+                Find the perfect trek in seconds.
 
-</label>
+            </p>
 
-<select name="difficulty">
+            <p class="dashboard-description">
 
-<option>Easy</option>
+                Tell us your preferred difficulty and destination.
+                Our AI will recommend the best trekking experience
+                tailored to your interests.
 
-<option>Moderate</option>
+            </p>
 
-<option>Difficult</option>
+        </div>
 
-</select>
+    </div>
 
-<br><br>
+</section>
 
-<label>
 
-Preferred Location
+<!-- ================= FORM ================= -->
 
-</label>
+<section class="recommend-section">
 
-<input
-type="text"
-name="location"
-placeholder="Example: Uttarakhand"
->
+    <div class="recommend-card">
 
-<br><br>
+        <h2>
 
-<button type="submit">
+            🤖 AI Trek Planner
 
-Recommend Trek
+        </h2>
 
-</button>
+        <p>
 
-</form>
+            Choose your preferences.
 
-</div>
+        </p>
 
-{% if recommendation %}
+        <form method="POST">
 
-<div class="trek-card">
+            <label>
 
-<div class="trek-info">
+                Trek Difficulty
 
-<h1>
+            </label>
 
-🏔 {{ recommendation.name }}
+            <select name="difficulty">
 
-</h1>
+                <option>Easy</option>
 
-<p>
+                <option>Moderate</option>
 
-📍 {{ recommendation.location }}
+                <option>Difficult</option>
 
-</p>
+            </select>
 
-<p>
+            <label>
 
-Difficulty:
-{{ recommendation.difficulty }}
+                Preferred Location
 
-</p>
+            </label>
 
-<p>
+            <input
+                type="text"
+                name="location"
+                placeholder="Example : Uttarakhand">
 
-Guide:
-{{ recommendation.staff.name if recommendation.staff }}
+            <button type="submit">
 
-</p>
+                Get Recommendation
 
-<p>
+            </button>
 
-Slots:
-{{ recommendation.available_slots }}
+        </form>
 
-</p>
+    </div>
 
-<p>
+</section>
 
-✨ {{ reason }}
 
-</p>
+{% if recommendations %}
 
-</div>
+<section>
 
-</div>
+    <h2 class="section-title">
+
+        Recommended Treks
+
+    </h2>
+
+    <p class="section-subtitle">
+
+        ✨ {{ reason }}
+
+    </p>
+
+    <div class="trek-grid">
+
+        {% for trek in recommendations %}
+
+        <div class="trek-card">
+
+            <img class="trek-image"
+                 src="{{ url_for('static',
+                 filename='images/' + (trek.image or 'default-trek.jpg')) }}">
+
+            <div class="trek-info">
+
+                <span class="difficulty-badge {{ trek.difficulty|lower }}">
+
+                    {{ trek.difficulty }}
+
+                </span>
+
+                <h2>
+
+                    {{ trek.name }}
+
+                </h2>
+
+                <div class="trek-meta">
+
+                    <p>
+
+                        📍 {{ trek.location }}
+
+                    </p>
+
+                    <p>
+
+                        ⏳ {{ trek.duration }} Days
+
+                    </p>
+
+                    <p>
+
+                        🧭 {{ trek.staff.name if trek.staff else "Guide Coming Soon" }}
+
+                    </p>
+
+                    <p>
+
+                        🎟 {{ trek.available_slots }} Slots Available
+
+                    </p>
+
+                </div>
+
+                <a class="book-btn"
+
+                   href="/trek/{{ trek.id }}">
+
+                    View Trek
+
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+{% if places %}
+
+<section class="info-grid">
+
+    <div class="info-card">
+
+        <h2>
+
+            📍 Nearby Attractions
+
+        </h2>
+
+        <ul>
+
+            {% for place in places %}
+
+            <li>
+
+                {{ place }}
+
+            </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+{% endif %}
+
+
+{% if foods %}
+
+    <div class="info-card">
+
+        <h2>
+
+            🍽 Local Cuisine
+
+        </h2>
+
+        <ul>
+
+            {% for food in foods %}
+
+            <li>
+
+                {{ food }}
+
+            </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+</section>
 
 {% endif %}
 

@@ -1,268 +1,298 @@
 {% extends "base.html" %}
 
+{% block title %}
+Admin Dashboard | Musafir Treks
+{% endblock %}
+
 {% block content %}
 
-<div class="admin-hero">
+<!-- ================= HERO ================= -->
 
-  <h1>
+<section class="dashboard-hero">
 
-    Admin Dashboard
+    <div class="dashboard-overlay">
 
-  </h1>
+        <div class="dashboard-content">
 
-  <p>
+            <p class="dashboard-small">
 
-    Manage treks, staff and users
+                ADMIN PANEL
 
-  </p>
+            </p>
 
-</div>
+            <h1>
 
-<div class="stats-grid">
+                Welcome Admin
 
-  <div class="stat-card">
+            </h1>
+
+            <p class="dashboard-subtitle">
+
+                Control every aspect of Musafir Treks
+
+            </p>
+
+            <p class="dashboard-description">
+
+                Manage users, staff, trekking expeditions and bookings from one
+                central dashboard. Monitor activity and keep every adventure
+                running smoothly.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= STATS ================= -->
+
+<section class="stats-section">
+
+    <div class="stat-card">
+
+        <h2>{{ total_users }}</h2>
+
+        <p>Users</p>
+
+    </div>
+
+    <div class="stat-card">
+
+        <h2>{{ total_staff }}</h2>
+
+        <p>Staff</p>
+
+    </div>
+
+    <div class="stat-card">
+
+        <h2>{{ total_treks }}</h2>
+
+        <p>Treks</p>
+
+    </div>
+
+    <div class="stat-card">
+
+        <h2>{{ total_bookings }}</h2>
+
+        <p>Bookings</p>
+
+    </div>
+
+</section>
+
+
+<!-- ================= ADMIN ACTIONS ================= -->
+
+<section class="dashboard-grid">
+
+    <a href="/admin/users" class="dashboard-card">
+
+        <div class="dashboard-icon">
+
+            👥
+
+        </div>
+
+        <h2>
+
+            Manage Users
+
+        </h2>
+
+        <p>
+
+            View, search and manage registered trekkers.
+
+        </p>
+
+    </a>
+
+
+    <a href="/admin/treks" class="dashboard-card">
+
+        <div class="dashboard-icon">
+
+            🏔
+
+        </div>
+
+        <h2>
+
+            Manage Treks
+
+        </h2>
+
+        <p>
+
+            View, edit and monitor all trekking expeditions.
+
+        </p>
+
+    </a>
+
+
+    <a href="/admin/treks/create" class="dashboard-card">
+
+        <div class="dashboard-icon">
+
+            ➕
+
+        </div>
+
+        <h2>
+
+            Create Trek
+
+        </h2>
+
+        <p>
+
+            Add a brand-new trekking adventure.
+
+        </p>
+
+    </a>
+
+
+    <a href="/admin/staff" class="dashboard-card">
+
+        <div class="dashboard-icon">
+
+            🧭
+
+        </div>
+
+        <h2>
+
+            Manage Staff
+
+        </h2>
+
+        <p>
+
+            Assign and manage trekking guides.
+
+        </p>
+
+    </a>
+
+
+    <a href="/admin/staff/create" class="dashboard-card">
+
+        <div class="dashboard-icon">
+
+            👨‍🏫
+
+        </div>
+
+        <h2>
+
+            Add Staff
+
+        </h2>
+
+        <p>
+
+            Register a new trekking guide.
+
+        </p>
+
+    </a>
+
+</section>
+
+
+<!-- ================= CHART ================= -->
+
+<section class="chart-box">
 
     <h2>
 
-      {{ total_users }}
+        Trek Popularity
 
     </h2>
 
-    <p>
+    <canvas id="bookingChart"></canvas>
 
-      Trekkers
+</section>
 
-    </p>
-
-  </div>
-
-  <div class="stat-card">
-
-    <h2>
-
-      {{ total_staff }}
-
-    </h2>
-
-    <p>
-
-      Staff
-
-    </p>
-
-  </div>
-
-  <div class="stat-card">
-
-    <h2>
-
-      {{ total_treks }}
-
-    </h2>
-
-    <p>
-
-      Treks
-
-    </p>
-
-  </div>
-
-  <div class="stat-card">
-
-    <h2>
-
-      {{ total_bookings }}
-
-    </h2>
-
-    <p>
-
-      Bookings
-
-    </p>
-
-  </div>
-
-</div>
-
-<div class="dashboard-grid">
-
-  <a class="dashboard-card" href="/admin/users">
-
-    👥
-
-    <h2>
-
-      View Users
-
-    </h2>
-
-    <p>
-
-      Manage registered users
-
-    </p>
-
-  </a>
-
-  <a class="dashboard-card" href="/admin/treks">
-
-    🏔
-
-    <h2>
-
-      View Treks
-
-    </h2>
-
-    <p>
-
-      Monitor trek activity
-
-    </p>
-
-  </a>
-
-  <a class="dashboard-card" href="/admin/treks/create">
-
-    ➕
-
-    <h2>
-
-      Create Treks
-
-    </h2>
-
-    <p>
-
-      Add new adventures
-
-    </p>
-
-  </a>
-
-  <a class="dashboard-card" href="/admin/staff/create">
-
-    🧭
-
-    <h2>
-
-      Add Staff
-
-    </h2>
-
-    <p>
-
-      Assign trek guides
-
-    </p>
-
-  </a>
-
-  <a class="dashboard-card" href="/admin/staff">
-
-    📋
-
-    <h2>
-
-      View Staff
-
-    </h2>
-
-    <p>
-
-      Track guide assignments
-
-    </p>
-
-  </a>
-
-</div>
-
-<div class="chart-box">
-
-  <h2>
-
-    Bookings per Trek
-
-  </h2>
-
-  <canvas id="bookingChart"></canvas>
-
-</div>
-
-<div class="chart-box">
-
-  <h2>
-
-    Bookings per Trek
-
-  </h2>
-
-  <canvas id="bookingChart"></canvas>
-
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
-
 <script>
 
-  const labels =
-    JSON.parse(
-      '{{ chart_labels|tojson|safe }}'
-    );
+const labels = {{ chart_labels | tojson | safe }};
+const values = {{ chart_values | tojson | safe }};
 
-  const values =
-    JSON.parse(
-      '{{ chart_values|tojson|safe }}'
-    );
+const ctx = document.getElementById("bookingChart");
 
-  const ctx =
-    document
-      .getElementById(
-        "bookingChart"
-      );
+new Chart(ctx, {
 
-  new Chart(
+    type: "bar",
 
-    ctx,
-
-    {
-
-      type: "bar",
-
-      data: {
+    data: {
 
         labels: labels,
 
         datasets: [
 
-          {
+            {
 
-            label: "Bookings",
+                label: "Bookings",
 
-            data: values
+                data: values,
 
-          }
+                borderRadius: 8,
+
+                backgroundColor: "#2E7D32"
+
+            }
 
         ]
 
-      },
+    },
 
-      options: {
+    options: {
 
-        responsive: true
+        responsive: true,
 
-      }
+        maintainAspectRatio: false,
+
+        plugins: {
+
+            legend: {
+
+                display: false
+
+            }
+
+        },
+
+        scales: {
+
+            y: {
+
+                beginAtZero: true,
+
+                ticks: {
+
+                    precision: 0
+
+                }
+
+            }
+
+        }
 
     }
 
-  );
+});
 
 </script>
-
 
 {% endblock %}

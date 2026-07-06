@@ -1,290 +1,329 @@
 {% extends "base.html" %}
 
+{% block title %}
+Staff Dashboard | Musafir Treks
+{% endblock %}
+
 {% block content %}
 
-<div class="admin-hero">
+<!-- ================= HERO ================= -->
 
-  <h1>
+<section class="dashboard-hero">
 
-    Musafir Operations Panel
+    <div class="dashboard-overlay">
 
-  </h1>
+        <div class="dashboard-content">
 
-  <p>
+            <p class="dashboard-small">
+                STAFF PANEL
+            </p>
 
-    Track occupancy, manage treks and update progress
+            <h1>
+                Welcome, {{ current_user.name }}
+            </h1>
 
-  </p>
+            <p class="dashboard-subtitle">
+                Manage your assigned trekking expeditions.
+            </p>
 
-</div>
+            <p class="dashboard-description">
 
-<div class="dashboard-grid">
+                Monitor occupancy, manage participants,
+                update trek progress and request guide
+                reassignment whenever necessary.
 
-  <div class="dashboard-card">
-
-    <h2>
-
-      {{ treks|length }}
-
-    </h2>
-
-    <p>
-
-      Assigned Treks
-
-    </p>
-
-  </div>
-
-</div>
-
-<div class="table-wrapper">
-
-  <table>
-
-    <tr>
-
-      <th>Trek</th>
-
-      <th>Booked</th>
-
-      <th>Remaining</th>
-
-      <th>Occupancy</th>
-
-      <th>Status</th>
-
-      <th>Participants</th>
-
-      <th>Guide</th>
-
-      <th>Progress</th>
-
-    </tr>
-
-    {% for trek in treks %}
-
-    <tr>
-
-      <td>
-
-        <div class="staff-trek">
-
-          <img class="staff-thumb" src="{{ url_for(
-'static',
-filename='images/' + (trek.image or 'default-trek.jpg')
-) }}" />
-
-          <div>
-
-            <strong>
-
-              {{ trek.name }}
-
-            </strong>
-
-            <br>
-
-            {{ trek.location }}
-
-            <br>
-
-            {{ trek.difficulty }}
-
-          </div>
+            </p>
 
         </div>
 
-      </td>
+    </div>
 
-      <td>
+</section>
 
-        {{ trek.bookings|length }}
 
-      </td>
+<!-- ================= STATS ================= -->
 
-      <td>
+<section class="stats-section">
 
-        {{ trek.available_slots }}
+    <div class="stat-card">
 
-      </td>
+        <h2>{{ treks|length }}</h2>
 
-      <td>
+        <p>Assigned Treks</p>
 
-        {% set total = trek.bookings|length + trek.available_slots %}
+    </div>
 
-        {% if total>0 %}
+</section>
 
-        {{ (((trek.bookings|length/total)*100)|round(0)|int) }}%
 
-        {% else %}
+<!-- ================= TABLE ================= -->
 
-        0%
+<section class="table-section">
 
-        {% endif %}
+<div class="table-card">
 
-      </td>
+<table>
 
-      <td>
+<thead>
 
-        {% if trek.available_slots==0 %}
+<tr>
 
-        <span class="status-full">
+<th>Trek</th>
+<th>Booked</th>
+<th>Remaining</th>
+<th>Occupancy</th>
+<th>Status</th>
+<th>Participants</th>
+<th>Guide</th>
+<th>Progress</th>
 
-          FULL
+</tr>
 
-        </span>
+</thead>
 
-        {% else %}
+<tbody>
 
-        <span class="status-open">
+{% for trek in treks %}
 
-          {{ trek.status }}
+<tr>
 
-        </span>
+<td>
 
-        {% endif %}
+<div class="staff-trek">
 
-      </td>
+<img
+class="staff-thumb"
+src="{{ url_for('static', filename='images/' + (trek.image or 'default-trek.jpg')) }}">
 
-      <td>
+<div>
 
-        <a class="table-btn" href="/staff/treks/{{trek.id}}">
+<strong>{{ trek.name }}</strong>
 
-          Trek Participants
+<br>
 
-        </a>
+{{ trek.location }}
 
-      </td>
+<br>
 
-      <td>
-
-        {% if trek.status!="Guide Change Requested"%}
-
-        <a class="table-btn" href="/staff/request/{{trek.id}}">
-
-          Request Guide Re-assignment
-
-        </a>
-
-        {% else %}
-
-        Pending
-
-        {% endif %}
-
-      </td>
-
-      <td>
-
-        {% if trek.status=="Open" %}
-
-        <a class="table-btn green" href="/staff/trek/start/{{trek.id}}">
-
-          Start
-
-        </a>
-
-        {% elif trek.status=="Ongoing" %}
-
-        <a class="table-btn blue" href="/staff/trek/complete/{{trek.id}}">
-
-          Complete
-
-        </a>
-
-        {% else %}
-
-        Completed
-
-        {% endif %}
-
-      </td>
-
-    </tr>
-
-    {% endfor %}
-
-  </table>
+{{ trek.difficulty }}
 
 </div>
 
-<div class="chart-box">
+</div>
 
-  <h2>
+</td>
 
-    Participants Per Trek
+<td>
 
-  </h2>
+{{ trek.bookings|length }}
 
-  <canvas id="staffChart"></canvas>
+</td>
+
+<td>
+
+{{ trek.available_slots }}
+
+</td>
+
+<td>
+
+{% set total = trek.bookings|length + trek.available_slots %}
+
+{% if total > 0 %}
+
+{{ (((trek.bookings|length / total) * 100)|round(0)|int) }}%
+
+{% else %}
+
+0%
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if trek.available_slots == 0 %}
+
+<span class="status-full">
+
+FULL
+
+</span>
+
+{% else %}
+
+<span class="status-open">
+
+{{ trek.status }}
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+<a
+class="table-btn"
+href="/staff/treks/{{ trek.id }}">
+
+Participants
+
+</a>
+
+</td>
+
+<td>
+
+{% if trek.status != "Guide Change Requested" %}
+
+<a
+class="table-btn"
+href="/staff/request/{{ trek.id }}">
+
+Request Change
+
+</a>
+
+{% else %}
+
+<span class="status-closed">
+
+Pending
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if trek.status == "Open" %}
+
+<a
+class="table-btn green"
+href="/staff/trek/start/{{ trek.id }}">
+
+Start Trek
+
+</a>
+
+{% elif trek.status == "Ongoing" %}
+
+<a
+class="table-btn blue"
+href="/staff/trek/complete/{{ trek.id }}">
+
+Complete Trek
+
+</a>
+
+{% else %}
+
+<span class="status-open">
+
+Completed
+
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
 
 </div>
+
+</section>
+
+
+<!-- ================= CHART ================= -->
+
+<section class="chart-box">
+
+<h2>
+
+Occupancy Percentage
+
+</h2>
+
+<canvas id="staffChart"></canvas>
+
+</section>
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
 <script>
 
-  const labels =
-    JSON.parse(
-      '{{ chart_labels|tojson|safe }}'
-    );
+const labels = {{ chart_labels | tojson }};
 
-  const values =
-    JSON.parse(
-      '{{ chart_values|tojson|safe }}'
-    );
+const values = {{ chart_values | tojson }};
 
-  new Chart(
+new Chart(
 
-    document.getElementById(
-      "staffChart"
-    ),
+document.getElementById("staffChart"),
 
-    {
+{
 
-      type: "bar",
+type:"bar",
 
-      data: {
+data:{
 
-        labels: labels,
+labels:labels,
 
-        datasets: [
+datasets:[{
 
-          {
+label:"Occupancy %",
 
-            label: "Occupancy %",
+data:values,
 
-            data: values
+borderRadius:8
 
-          }
+}]
 
-        ]
+},
 
-      },
+options:{
 
-      options: {
+responsive:true,
 
-        responsive: true,
-        scales: {
+plugins:{
 
-          y: {
+legend:{
 
-            beginAtZero: true,
+display:false
 
-            max: 100
+}
 
-          }
+},
 
-        }
+scales:{
 
-      }
+y:{
 
-    }
+beginAtZero:true,
 
-  );
+max:100
+
+}
+
+}
+
+}
+
+}
+
+);
 
 </script>
 
