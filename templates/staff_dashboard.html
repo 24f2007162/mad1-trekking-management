@@ -10,33 +10,33 @@ Staff Dashboard | Musafir Treks
 
 <section class="dashboard-hero">
 
-    <div class="dashboard-overlay">
+  <div class="dashboard-overlay">
 
-        <div class="dashboard-content">
+    <div class="dashboard-content">
 
-            <p class="dashboard-small">
-                STAFF PANEL
-            </p>
+      <p class="dashboard-small">
+        STAFF PANEL
+      </p>
 
-            <h1>
-                Welcome, {{ current_user.name }}
-            </h1>
+      <h1>
+        Welcome, {{ current_user.name }}
+      </h1>
 
-            <p class="dashboard-subtitle">
-                Manage your assigned trekking expeditions.
-            </p>
+      <p class="dashboard-subtitle">
+        Manage your assigned trekking expeditions.
+      </p>
 
-            <p class="dashboard-description">
+      <p class="dashboard-description">
 
-                Monitor occupancy, manage participants,
-                update trek progress and request guide
-                reassignment whenever necessary.
+        Monitor occupancy, manage participants,
+        update trek progress and request guide
+        reassignment whenever necessary.
 
-            </p>
-
-        </div>
+      </p>
 
     </div>
+
+  </div>
 
 </section>
 
@@ -45,13 +45,13 @@ Staff Dashboard | Musafir Treks
 
 <section class="stats-section">
 
-    <div class="stat-card">
+  <div class="stat-card">
 
-        <h2>{{ treks|length }}</h2>
+    <h2>{{ treks|length }}</h2>
 
-        <p>Assigned Treks</p>
+    <p>Assigned Treks</p>
 
-    </div>
+  </div>
 
 </section>
 
@@ -60,188 +60,179 @@ Staff Dashboard | Musafir Treks
 
 <section class="table-section">
 
-<div class="table-card">
+  <div class="table-card">
 
-<table>
+    <table>
 
-<thead>
+      <thead>
 
-<tr>
+        <tr>
 
-<th>Trek</th>
-<th>Booked</th>
-<th>Remaining</th>
-<th>Occupancy</th>
-<th>Status</th>
-<th>Participants</th>
-<th>Guide</th>
-<th>Progress</th>
+          <th>Trek</th>
+          <th>Booked</th>
+          <th>Remaining</th>
+          <th>Occupancy</th>
+          <th>Status</th>
+          <th>Participants</th>
+          <th>Guide</th>
+          <th>Progress</th>
 
-</tr>
+        </tr>
 
-</thead>
+      </thead>
 
-<tbody>
+      <tbody>
 
-{% for trek in treks %}
+        {% for trek in treks %}
 
-<tr>
+        <tr>
 
-<td>
+          <td>
 
-<div class="staff-trek">
+            <div class="staff-trek">
 
-<img
-class="staff-thumb"
-src="{{ url_for('static', filename='images/' + (trek.image or 'default-trek.jpg')) }}">
+              <img class="staff-thumb"
+                src="{{ url_for('static', filename='images/' + (trek.image or 'default-trek.jpg')) }}">
 
-<div>
+              <div>
 
-<strong>{{ trek.name }}</strong>
+                <strong>{{ trek.name }}</strong>
 
-<br>
+                <br>
 
-{{ trek.location }}
+                {{ trek.location }}
 
-<br>
+                <br>
 
-{{ trek.difficulty }}
+                {{ trek.difficulty }}
 
-</div>
+              </div>
 
-</div>
+            </div>
 
-</td>
+          </td>
 
-<td>
+          <td>
 
-{{ trek.bookings|length }}
+            {{ trek.bookings|length }}
 
-</td>
+          </td>
 
-<td>
+          <td>
 
-{{ trek.available_slots }}
+            {{ trek.available_slots }}
 
-</td>
+          </td>
 
-<td>
+          <td>
 
-{% set total = trek.bookings|length + trek.available_slots %}
+            {% set total = trek.bookings|length + trek.available_slots %}
 
-{% if total > 0 %}
+            {% if total > 0 %}
 
-{{ (((trek.bookings|length / total) * 100)|round(0)|int) }}%
+            {{ (((trek.bookings|length / total) * 100)|round(0)|int) }}%
 
-{% else %}
+            {% else %}
 
-0%
+            0%
 
-{% endif %}
+            {% endif %}
 
-</td>
+          </td>
 
-<td>
+          <td>
 
-{% if trek.available_slots == 0 %}
+            {% if trek.available_slots == 0 %}
 
-<span class="status-full">
+            <span class="status-full">
 
-FULL
+              FULL
 
-</span>
+            </span>
 
-{% else %}
+            {% else %}
 
-<span class="status-open">
+            <span class="status-open">
 
-{{ trek.status }}
+              {{ trek.status }}
 
-</span>
+            </span>
 
-{% endif %}
+            {% endif %}
 
-</td>
+          </td>
 
-<td>
+          <td>
 
-<a
-class="table-btn"
-href="/staff/treks/{{ trek.id }}">
+            <a class="table-btn" href="/staff/treks/{{ trek.id }}">
 
-Participants
+              Participants
 
-</a>
+            </a>
 
-</td>
+          </td>
 
-<td>
+          <td>
 
-{% if trek.status != "Guide Change Requested" %}
+            {% if trek.status != "Guide Change Requested" %}
 
-<a
-class="table-btn"
-href="/staff/request/{{ trek.id }}">
+            <a class="table-btn" href="/staff/request/{{ trek.id }}">
 
-Request Change
+              Request Change
 
-</a>
+            </a>
 
-{% else %}
+            {% else %}
 
-<span class="status-closed">
+            <span class="status-closed">
 
-Pending
+              Pending
 
-</span>
+            </span>
 
-{% endif %}
+            {% endif %}
 
-</td>
+          </td>
 
-<td>
+          <td>
 
-{% if trek.status == "Open" %}
+            {% if trek.status == "Open" %}
 
-<a
-class="table-btn green"
-href="/staff/trek/start/{{ trek.id }}">
+            <a class="table-btn green" href="/staff/trek/start/{{ trek.id }}">
 
-Start Trek
+              Start Trek
 
-</a>
+            </a>
 
-{% elif trek.status == "Ongoing" %}
+            {% elif trek.status == "Ongoing" %}
 
-<a
-class="table-btn blue"
-href="/staff/trek/complete/{{ trek.id }}">
+            <a class="table-btn blue" href="/staff/trek/complete/{{ trek.id }}">
 
-Complete Trek
+              Complete Trek
 
-</a>
+            </a>
 
-{% else %}
+            {% else %}
 
-<span class="status-open">
+            <span class="status-open">
 
-Completed
+              Completed
 
-</span>
+            </span>
 
-{% endif %}
+            {% endif %}
 
-</td>
+          </td>
 
-</tr>
+        </tr>
 
-{% endfor %}
+        {% endfor %}
 
-</tbody>
+      </tbody>
 
-</table>
+    </table>
 
-</div>
+  </div>
 
 </section>
 
@@ -250,13 +241,13 @@ Completed
 
 <section class="chart-box">
 
-<h2>
+  <h2>
 
-Occupancy Percentage
+    Occupancy Percentage
 
-</h2>
+  </h2>
 
-<canvas id="staffChart"></canvas>
+  <canvas id="staffChart"></canvas>
 
 </section>
 
@@ -265,65 +256,65 @@ Occupancy Percentage
 
 <script>
 
-const labels = {{ chart_labels | tojson }};
+  const labels = {{ chart_labels | tojson }};
 
-const values = {{ chart_values | tojson }};
+  const values = {{ chart_values | tojson }};
 
-new Chart(
+  new Chart(
 
-document.getElementById("staffChart"),
+    document.getElementById("staffChart"),
 
-{
+    {
 
-type:"bar",
+      type: "bar",
 
-data:{
+      data: {
 
-labels:labels,
+        labels: labels,
 
-datasets:[{
+        datasets: [{
 
-label:"Occupancy %",
+          label: "Occupancy %",
 
-data:values,
+          data: values,
 
-borderRadius:8
+          borderRadius: 8
 
-}]
+        }]
 
-},
+      },
 
-options:{
+      options: {
 
-responsive:true,
+        responsive: true,
 
-plugins:{
+        plugins: {
 
-legend:{
+          legend: {
 
-display:false
+            display: false
 
-}
+          }
 
-},
+        },
 
-scales:{
+        scales: {
 
-y:{
+          y: {
 
-beginAtZero:true,
+            beginAtZero: true,
 
-max:100
+            max: 100
 
-}
+          }
 
-}
+        }
 
-}
+      }
 
-}
+    }
 
-);
+  );
 
 </script>
 

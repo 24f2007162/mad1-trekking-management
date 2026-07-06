@@ -30,6 +30,7 @@ class Trek(db.Model):
   description = db.Column(db.Text)
   image = db.Column(db.String(255),default = "default-trek.jpg")
   created_at = db.Column(db.DateTime, default = lambda: datetime.now(UTC))
+  price = db.Column(db.Integer, default=5000)
     
 
 class Booking(db.Model):

@@ -15,28 +15,20 @@ My Bookings | Musafir Treks
         <div class="dashboard-content">
 
             <p class="dashboard-small">
-
                 MY ADVENTURES
-
             </p>
 
             <h1>
-
                 My Bookings
-
             </h1>
 
             <p class="dashboard-subtitle">
-
                 Every adventure begins with a booking.
-
             </p>
 
             <p class="dashboard-description">
-
                 Track your upcoming treks, monitor their progress and manage
                 your bookings from one place.
-
             </p>
 
         </div>
@@ -46,21 +38,19 @@ My Bookings | Musafir Treks
 </section>
 
 
+
 <!-- ================= BOOKINGS ================= -->
 
 <section>
 
     <h2 class="section-title">
-
         Your Trek Bookings
-
     </h2>
 
     <p class="section-subtitle">
-
         {{ bookings|length }} Booking(s)
-
     </p>
+
 
     {% if bookings %}
 
@@ -68,109 +58,123 @@ My Bookings | Musafir Treks
 
         {% for booking in bookings %}
 
-        <div class="trek-card">
+        <div class="trek-card booking-card">
 
-            <img class="trek-image"
-                 src="{{ url_for('static',
-                 filename='images/' + (booking.trek.image or 'default-trek.jpg')) }}">
+            <img class="trek-image" src="{{ url_for('static',
+                filename='images/' + (booking.trek.image or 'default-trek.jpg')) }}">
 
             <div class="trek-info">
 
                 <span class="difficulty-badge {{ booking.trek.difficulty|lower }}">
-
                     {{ booking.trek.difficulty }}
-
                 </span>
 
+
                 <h2>
-
                     {{ booking.trek.name }}
-
                 </h2>
+
+
+                <!-- PRICE -->
+
+                <div class="booking-price">
+
+                    ₹{{ "{:,}".format(booking.trek.price) }}
+
+                    <span>/ person</span>
+
+                </div>
+
 
                 <div class="trek-meta">
 
                     <p>
-
                         📍 {{ booking.trek.location }}
-
                     </p>
 
                     <p>
-
                         ⏳ {{ booking.trek.duration }} Days
-
                     </p>
 
                     <p>
-
                         🧭
                         {{ booking.trek.staff.name if booking.trek.staff else "Guide Coming Soon" }}
-
                     </p>
 
                     <p>
-
                         🎫 Booking ID :
-                        {{ booking.id }}
-
+                        BK-{{ "%04d"|format(booking.id) }}
                     </p>
 
                 </div>
 
-                <!-- Timeline -->
+
+                <!-- TIMELINE -->
 
                 <div class="timeline">
 
                     <div class="step active">
-
                         Booked
-
                     </div>
 
                     <div class="step {% if booking.trek.status in ['Ongoing','Completed'] %}active{% endif %}">
-
                         Ongoing
-
                     </div>
 
                     <div class="step {% if booking.trek.status == 'Completed' %}active{% endif %}">
-
                         Completed
-
                     </div>
 
                 </div>
 
-                <p class="booking-status">
 
-                    Status :
+                <!-- BOOKING DETAILS -->
 
-                    <strong>
+                <div class="booking-info">
+
+                    <p>
+
+                        <strong>Booked On :</strong>
+
+                        {{ booking.booking_date.strftime("%d %b %Y") }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Status :</strong>
 
                         {{ booking.trek.status }}
 
-                    </strong>
+                    </p>
 
-                </p>
+                    <p>
+
+                        <strong>Payment :</strong>
+
+                        {{ booking.payment_status }}
+
+                    </p>
+
+                </div>
+
+
+                <!-- BUTTONS -->
 
                 <div class="booking-buttons">
 
-                    <a class="book-btn"
-
-                       href="/trek/{{ booking.trek.id }}">
+                    <a class="book-btn" href="{{ url_for('trek_details', id=booking.trek.id) }}">
 
                         View Trek
 
                     </a>
 
+
                     {% if booking.trek.status == "Open" %}
 
-                    <a class="cancel-btn"
+                    <a class="cancel-btn" href="/cancel-booking/{{ booking.id }}">
 
-                       href="/cancel-booking/{{ booking.id }}">
-
-                        Cancel
+                        Cancel Booking
 
                     </a>
 
@@ -185,6 +189,7 @@ My Bookings | Musafir Treks
         {% endfor %}
 
     </div>
+
 
     {% else %}
 
@@ -202,9 +207,7 @@ My Bookings | Musafir Treks
 
         </p>
 
-        <a class="hero-btn"
-
-           href="{{ url_for('dashboard') }}">
+        <a class="hero-btn" href="{{ url_for('dashboard') }}">
 
             Explore Treks
 

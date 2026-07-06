@@ -136,30 +136,50 @@ img {
     box-shadow: 0 5px 25px rgba(0, 0, 0, .12);
 
 }
+ 
+/* ================= NAVBAR LOGO ================= */
 
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-name{
+    height: 20px;
+    width: auto;
+    color: white;
+    font-family: cursive;
+    padding-bottom: 30px;
+    
+}
 
 .logo a {
-
-    font-size: 30px;
-
-    font-weight: 700;
-
-    color: white;
-
     display: flex;
-
     align-items: center;
+    text-decoration: none;
+}
 
-    gap: 10px;
+.logo-img {
+    height: 100px;
+    width: auto;
+    display: block;
+    transition: transform 0.3s ease;
+    
+}
 
+.logo-img:hover {
+    transform: scale(1.05);
+}
+
+.footer-logo{
+    height:90px;
+    width:auto;
+    display:block;
+    margin:0 auto 18px;
 }
 
 
-.logo i {
-
-    color: var(--accent);
-
-}
+    
 
 
 .nav-links {
@@ -211,6 +231,13 @@ img {
 
     width: 100%;
 
+}
+
+.navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 40px;
 }
 
 
@@ -2450,6 +2477,400 @@ footer {
 
     .td-content {
         width: 100%;
+    }
+
+}
+
+/* ===========================
+   TREK SEARCH
+=========================== */
+
+.trek-toolbar{
+
+    margin:30px auto;
+    display:flex;
+    justify-content:center;
+
+}
+
+#trekSearch{
+
+    width:420px;
+    max-width:90%;
+    padding:14px 20px;
+    border-radius:40px;
+    border:1px solid #ddd;
+    font-size:15px;
+    outline:none;
+    transition:.3s;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+
+}
+
+#trekSearch:focus{
+
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(34,197,94,.15);
+
+}
+
+.no-results{
+
+    display:none;
+    margin-top:35px;
+    text-align:center;
+    font-size:18px;
+    color:#777;
+
+}
+
+
+/* ===================================
+   TREK PRICE SECTION
+=================================== */
+
+.trek-price-row{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-top:16px;
+    margin-bottom:18px;
+
+}
+
+.trek-price{
+
+    font-size:26px;
+    font-weight:700;
+
+    color:var(--primary-dark);
+
+}
+
+.trek-price span{
+
+    font-size:14px;
+    color:var(--text-light);
+    font-weight:500;
+
+}
+
+
+/* ===================================
+   PRICE TAGS
+=================================== */
+
+.price-tag{
+
+    padding:6px 14px;
+
+    border-radius:30px;
+
+    color:white;
+
+    font-size:12px;
+
+    font-weight:600;
+
+}
+
+
+.budget-tag{
+
+    background:#16a34a;
+
+}
+
+.popular-tag{
+
+    background:#f59e0b;
+
+}
+
+.premium-tag{
+
+    background:#7c3aed;
+
+}
+
+
+/* ===================================
+   SEARCH BAR IMPROVEMENT
+=================================== */
+
+.trek-toolbar{
+
+    display:flex;
+
+    justify-content:center;
+
+    margin:35px 0;
+
+}
+
+#trekSearch{
+
+    width:420px;
+    max-width:90%;
+
+    padding:14px 18px;
+
+    border:none;
+
+    border-radius:40px;
+
+    font-size:15px;
+
+    box-shadow:var(--shadow);
+
+    outline:none;
+
+    transition:.3s;
+
+}
+
+#trekSearch:focus{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
+
+}
+
+
+/* ===================================
+   SEARCH EMPTY STATE
+=================================== */
+
+.no-results{
+
+    display:none;
+
+    text-align:center;
+
+    color:var(--text-light);
+
+    font-size:18px;
+
+    margin:40px 0;
+
+}
+
+/* ==============================
+   TREK DETAILS PRICE
+============================== */
+
+.td-price-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin:22px 0;
+
+}
+
+.td-price{
+
+    font-size:32px;
+
+    font-weight:700;
+
+    color:var(--primary-dark);
+
+}
+
+.td-price span{
+
+    font-size:14px;
+
+    color:var(--text-light);
+
+    font-weight:500;
+
+}
+
+
+/* ==============================
+   HIGHLIGHTS
+============================== */
+
+.td-highlights{
+
+    margin-top:22px;
+
+    padding:18px;
+
+    background:#ffffff;
+
+    border-radius:16px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.td-highlights ul{
+
+    margin-top:10px;
+
+    padding-left:20px;
+
+}
+
+.td-highlights li{
+
+    margin-bottom:10px;
+
+    color:var(--text-light);
+
+}
+
+
+/* ==============================
+   BEST TIME
+============================== */
+
+.td-besttime{
+
+    margin-top:22px;
+
+    padding:18px;
+
+    background:#f9fafb;
+
+    border-radius:16px;
+
+    box-shadow:var(--shadow);
+
+}
+/* ==========================================
+        BOOKINGS PAGE ENHANCEMENTS
+========================================== */
+
+.booking-card{
+
+    transition:.3s;
+
+}
+
+.booking-card:hover{
+
+    transform:translateY(-6px);
+
+}
+
+
+/* PRICE */
+
+.booking-price{
+
+    margin:14px 0 18px;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    color:var(--primary-dark);
+
+}
+
+.booking-price span{
+
+    font-size:14px;
+
+    font-weight:500;
+
+    color:var(--text-light);
+
+}
+
+
+/* BOOKING INFO */
+
+.booking-info{
+
+    margin-top:18px;
+
+    padding:14px 18px;
+
+    background:#f8fafc;
+
+    border-radius:12px;
+
+}
+
+.booking-info p{
+
+    margin:8px 0;
+
+    color:var(--text-light);
+
+}
+
+
+/* BUTTONS */
+
+.booking-buttons{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-top:22px;
+
+}
+
+.booking-buttons .book-btn{
+
+    flex:1;
+
+}
+
+.cancel-btn{
+
+    flex:1;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-decoration:none;
+
+    background:#ef4444;
+
+    color:white;
+
+    border-radius:50px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+    padding:12px;
+
+}
+
+.cancel-btn:hover{
+
+    background:#dc2626;
+
+}
+
+
+/* RESPONSIVE */
+
+@media(max-width:700px){
+
+    .booking-buttons{
+
+        flex-direction:column;
+
     }
 
 }

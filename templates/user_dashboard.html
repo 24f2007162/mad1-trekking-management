@@ -51,7 +51,8 @@ Dashboard | Musafir Treks
 </section>
 
 
-<!-- ================= DASHBOARD STATS ================= -->
+
+<!-- ================= STATS ================= -->
 
 <section class="stats-section">
 
@@ -61,21 +62,22 @@ Dashboard | Musafir Treks
     </div>
 
     <div class="stat-card">
-        <h2>25+</h2>
-        <p>Certified Guides</p>
+        <h2>{{ bookings|length }}</h2>
+        <p>My Bookings</p>
     </div>
 
     <div class="stat-card">
-        <h2>1000+</h2>
-        <p>Happy Trekkers</p>
+        <h2>{{ staff_count }}</h2>
+        <p>Expert Guides</p>
     </div>
 
     <div class="stat-card">
-        <h2>AI</h2>
-        <p>Smart Planner</p>
+        <h2>{{ locations }}</h2>
+        <p>Locations Covered</p>
     </div>
 
 </section>
+
 
 
 <!-- ================= QUICK ACTIONS ================= -->
@@ -110,7 +112,7 @@ Dashboard | Musafir Treks
         </div>
 
         <h3>
-            My Bookings
+            My Adventures
         </h3>
 
         <p>
@@ -147,6 +149,7 @@ Dashboard | Musafir Treks
 </section>
 
 
+
 <!-- ================= TREKS ================= -->
 
 <section id="treks">
@@ -159,11 +162,28 @@ Dashboard | Musafir Treks
         Handpicked adventures waiting for you.
     </p>
 
-    <div class="trek-grid">
+
+    <!-- Search -->
+
+    <div class="trek-toolbar">
+
+        <input
+            type="text"
+            id="trekSearch"
+            placeholder="🔍 Search by trek, location or difficulty">
+
+    </div>
+
+
+    <div class="trek-grid" id="trekGrid">
 
         {% for trek in treks %}
 
-        <div class="trek-card">
+        <div
+            class="trek-card"
+            data-name="{{ trek.name|lower }}"
+            data-location="{{ trek.location|lower }}"
+            data-difficulty="{{ trek.difficulty|lower }}">
 
             <img
                 class="trek-image"
@@ -185,11 +205,13 @@ Dashboard | Musafir Treks
                     {% if trek.description %}
 
                         {{ trek.description[:120] }}
-                        {% if trek.description|length > 120 %}...{% endif %}
+                        {% if trek.description|length > 120 %}
+                            ...
+                        {% endif %}
 
                     {% else %}
 
-                        Experience one of India's most breathtaking trekking adventures with expert guides, scenic trails and unforgettable mountain views.
+                        Experience breathtaking mountain trails with experienced guides and unforgettable scenery.
 
                     {% endif %}
 
@@ -197,9 +219,13 @@ Dashboard | Musafir Treks
 
                 <div class="trek-meta">
 
-                    <p>📍 <strong>{{ trek.location }}</strong></p>
+                    <p>
+                        📍 <strong>{{ trek.location }}</strong>
+                    </p>
 
-                    <p>⏳ {{ trek.duration }} Days</p>
+                    <p>
+                        ⏳ {{ trek.duration }} Days
+                    </p>
 
                     <p>
                         🧭
@@ -207,15 +233,59 @@ Dashboard | Musafir Treks
                     </p>
 
                     <p>
-                        🎟
-                        {{ trek.available_slots }} Slots Available
+                        🎟 {{ trek.available_slots }} Slots Available
                     </p>
 
                 </div>
 
-                <a class="book-btn"
-                   href="{{ url_for('trek_details', trek_id=trek.id) if false else '/trek/' ~ trek.id }}">
-                    View Trek →
+
+                <!-- PRICE -->
+
+                <div class="trek-price-row">
+
+                    <div class="trek-price">
+
+                        ₹{{ "{:,}".format(trek.price) }}
+
+                        <span>/ person</span>
+
+                    </div>
+
+                    {% if trek.price < 7000 %}
+
+                        <span class="price-tag budget-tag">
+
+                            Budget
+
+                        </span>
+
+                    {% elif trek.price <= 10000 %}
+
+                        <span class="price-tag popular-tag">
+
+                            Popular
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="price-tag premium-tag">
+
+                            Premium
+
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <a
+                    class="book-btn"
+                    href="{{ url_for('trek_details', id=trek.id) }}">
+
+                    Explore Trek →
+
                 </a>
 
             </div>
@@ -226,6 +296,58 @@ Dashboard | Musafir Treks
 
     </div>
 
+
+    <p id="noResults" class="no-results">
+
+        No treks match your search.
+
+    </p>
+
 </section>
+
+
+
+<script>
+
+const searchBox = document.getElementById("trekSearch");
+const trekCards = document.querySelectorAll(".trek-card");
+const noResults = document.getElementById("noResults");
+
+searchBox.addEventListener("keyup", function(){
+
+    const query = this.value.toLowerCase().trim();
+
+    let visible = 0;
+
+    trekCards.forEach(card=>{
+
+        const name = card.dataset.name;
+        const location = card.dataset.location;
+        const difficulty = card.dataset.difficulty;
+
+        if(
+            name.includes(query) ||
+            location.includes(query) ||
+            difficulty.includes(query)
+        ){
+
+            card.style.display="block";
+            visible++;
+
+        }
+
+        else{
+
+            card.style.display="none";
+
+        }
+
+    });
+
+    noResults.style.display = visible ? "none" : "block";
+
+});
+
+</script>
 
 {% endblock %}

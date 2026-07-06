@@ -10,121 +10,109 @@ Login | Musafir Treks
 
 <div class="hero-section">
 
-    <div class="hero-overlay">
+  <div class="hero-overlay">
 
-        <!-- LEFT SIDE -->
+    <!-- LEFT SIDE -->
 
-        <div class="hero-content">
+    <div class="hero-content">
 
-            <p class="hero-small">
+      <p class="hero-small">
 
-                EXPLORE • TREK • DISCOVER
+        EXPLORE • TREK • DISCOVER
 
-            </p>
+      </p>
 
-            <h1>
+      <h1>
 
-                Musafir
+        Musafir
 
-            </h1>
+      </h1>
 
-            <p class="hero-subtitle">
+      <p class="hero-subtitle">
 
-                Explore Beyond the Trails
+        Explore Beyond the Trails
 
-            </p>
+      </p>
 
-            <p class="hero-description">
+      <p class="hero-description">
 
-                Discover breathtaking trekking destinations across India,
-                connect with experienced guides,
-                and create unforgettable adventures with Musafir Treks.
+        Discover breathtaking trekking destinations across India,
+        connect with experienced guides,
+        and create unforgettable adventures with Musafir Treks.
 
-            </p>
-
-        </div>
-
-        <!-- RIGHT SIDE -->
-
-        <div class="login-card">
-
-            <h2>
-
-                Welcome Back 👋
-
-            </h2>
-
-            <p class="login-text">
-
-                Login to continue your trekking journey.
-
-            </p>
-
-            <form method="POST">
-
-                <label>
-
-                    Email
-
-                </label>
-
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Enter your email"
-                    required
-                >
-
-                <label>
-
-                    Password
-
-                </label>
-
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Enter your password"
-                    required
-                >
-
-                <button
-                    type="submit"
-                    class="login-btn">
-
-                    Login
-
-                </button>
-
-            </form>
-
-            <div class="login-links">
-
-                <a href="{{ url_for('forgot_password') }}">
-
-                    Forgot Password?
-
-                </a>
-
-                <br><br>
-
-                <span>
-
-                    New to Musafir?
-
-                </span>
-
-                <a href="{{ url_for('register') }}">
-
-                    Create Account
-
-                </a>
-
-            </div>
-
-        </div>
+      </p>
 
     </div>
+
+    <!-- RIGHT SIDE -->
+
+    <div class="login-card">
+
+      <h2>
+
+        Welcome Back 👋
+
+      </h2>
+
+      <p class="login-text">
+
+        Login to continue your trekking journey.
+
+      </p>
+
+      <form method="POST">
+
+        <label>
+
+          Email
+
+        </label>
+
+        <input type="email" name="email" placeholder="Enter your email" required>
+
+        <label>
+
+          Password
+
+        </label>
+
+        <input type="password" name="password" placeholder="Enter your password" required>
+
+        <button type="submit" class="login-btn">
+
+          Login
+
+        </button>
+
+      </form>
+
+      <div class="login-links">
+
+        <a href="{{ url_for('forgot_password') }}">
+
+          Forgot Password?
+
+        </a>
+
+        <br><br>
+
+        <span>
+
+          New to Musafir?
+
+        </span>
+
+        <a href="{{ url_for('register') }}">
+
+          Create Account
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
 

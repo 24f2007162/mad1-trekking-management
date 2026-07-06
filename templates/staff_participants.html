@@ -10,17 +10,17 @@ Trek Participants | Musafir Treks
 
 <section class="admin-hero">
 
-    <h1>
+  <h1>
 
-        Trek Participants
+    Trek Participants
 
-    </h1>
+  </h1>
 
-    <p>
+  <p>
 
-        View all trekkers assigned to this expedition.
+    View all trekkers assigned to this expedition.
 
-    </p>
+  </p>
 
 </section>
 
@@ -29,79 +29,79 @@ Trek Participants | Musafir Treks
 
 <section class="table-section">
 
-    <div class="table-card">
+  <div class="table-card">
 
-        {% if bookings %}
+    {% if bookings %}
 
-        <table>
+    <table>
 
-            <thead>
+      <thead>
 
-                <tr>
+        <tr>
 
-                    <th>#</th>
+          <th>#</th>
 
-                    <th>Name</th>
+          <th>Name</th>
 
-                    <th>Email</th>
+          <th>Email</th>
 
-                </tr>
+        </tr>
 
-            </thead>
+      </thead>
 
-            <tbody>
+      <tbody>
 
-                {% for booking in bookings %}
+        {% for booking in bookings %}
 
-                <tr>
+        <tr>
 
-                    <td>
+          <td>
 
-                        {{ loop.index }}
+            {{ loop.index }}
 
-                    </td>
+          </td>
 
-                    <td>
+          <td>
 
-                        {{ booking.user.name }}
+            {{ booking.user.name }}
 
-                    </td>
+          </td>
 
-                    <td>
+          <td>
 
-                        {{ booking.user.email }}
+            {{ booking.user.email }}
 
-                    </td>
+          </td>
 
-                </tr>
+        </tr>
 
-                {% endfor %}
+        {% endfor %}
 
-            </tbody>
+      </tbody>
 
-        </table>
+    </table>
 
-        {% else %}
+    {% else %}
 
-        <div class="empty-state">
+    <div class="empty-state">
 
-            <h2>
+      <h2>
 
-                No Participants Yet
+        No Participants Yet
 
-            </h2>
+      </h2>
 
-            <p>
+      <p>
 
-                This trek currently has no confirmed bookings.
+        This trek currently has no confirmed bookings.
 
-            </p>
-
-        </div>
-
-        {% endif %}
+      </p>
 
     </div>
+
+    {% endif %}
+
+  </div>
 
 </section>
 

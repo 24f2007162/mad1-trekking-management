@@ -297,7 +297,25 @@ def user_dashboard():
     if current_user.role != "user":
         return "Access Denied!"
     treks = Trek.query.filter(Trek.status == "Open", Trek.available_slots > 0).all()
-    return render_template("user_dashboard.html", treks=treks)
+    bookings = Booking.query.filter_by(user_id=current_user.id).all()
+
+    staff_count = staff.query.count()
+
+    locations = db.session.query(Trek.location).distinct().count()
+
+    next_booking = (
+    Booking.query.filter_by(user_id=current_user.id)
+    .order_by(Booking.booking_date.asc())
+    .first()
+)
+    return render_template(
+    "user_dashboard.html",
+    treks=treks,
+    bookings=bookings,
+    staff_count=staff_count,
+    locations=locations,
+    next_booking=next_booking,
+)
 
 
 @app.route("/book/<int:id>")

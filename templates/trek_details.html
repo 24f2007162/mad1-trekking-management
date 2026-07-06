@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}{{ trek.name }} | Musafir{% endblock %}
+{% block title %}
+{{ trek.name }} | Musafir
+{% endblock %}
 
 {% block content %}
 
@@ -12,10 +14,14 @@
 
         <div class="td-media">
 
-            <img class="td-image" src="{{ url_for('static',
-                    filename='images/' + (trek.image or 'default-trek.jpg')) }}" alt="{{ trek.name }}">
+            <img
+                class="td-image"
+                src="{{ url_for('static',
+                filename='images/' + (trek.image or 'default-trek.jpg')) }}"
+                alt="{{ trek.name }}">
 
         </div>
+
 
         <!-- RIGHT DETAILS -->
 
@@ -42,29 +48,82 @@
             </p>
 
             <p class="td-slots">
-                🎟 {{ trek.available_slots }} Slots Available
+                🎟 {{ trek.available_slots }} Slots Left
             </p>
+
+
+            <!-- PRICE -->
+
+            <div class="td-price-row">
+
+                <div class="td-price">
+
+                    ₹{{ "{:,}".format(trek.price) }}
+
+                    <span>/ person</span>
+
+                </div>
+
+                {% if trek.price < 7000 %}
+
+                <span class="price-tag budget-tag">
+
+                    Budget
+
+                </span>
+
+                {% elif trek.price <=10000 %}
+
+                <span class="price-tag popular-tag">
+
+                    Popular
+
+                </span>
+
+                {% else %}
+
+                <span class="price-tag premium-tag">
+
+                    Premium
+
+                </span>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- WEATHER -->
 
             {% if weather %}
 
             <div class="td-weather">
 
                 <h3 class="td-section-title">
+
                     🌤 Live Weather
+
                 </h3>
 
                 <div class="td-weather-main">
 
-                    <img class="td-weather-icon" src="{{ weather.icon }}">
+                    <img
+                        class="td-weather-icon"
+                        src="{{ weather.icon }}">
 
                     <div>
 
                         <h2>
+
                             {{ weather.temp }}°C
+
                         </h2>
 
                         <p>
+
                             {{ weather.condition }}
+
                         </p>
 
                     </div>
@@ -74,11 +133,15 @@
                 <div class="td-weather-stats">
 
                     <p>
-                        💧 Humidity: {{ weather.humidity }}%
+
+                        💧 {{ weather.humidity }}%
+
                     </p>
 
                     <p>
-                        💨 Wind: {{ weather.wind }} km/h
+
+                        💨 {{ weather.wind }} km/h
+
                     </p>
 
                 </div>
@@ -97,25 +160,82 @@
 
             {% endif %}
 
+
+
+            <!-- DESCRIPTION -->
+
             <div class="td-description">
 
                 <h3 class="td-section-title">
 
-                    About Trek
+                    About this Trek
 
                 </h3>
 
                 <p>
 
-                    {{ trek.description or
-                    "Experience breathtaking landscapes and unforgettable trekking adventure." }}
+                    {{ trek.description }}
 
                 </p>
 
             </div>
 
-            <a class="td-book-btn" href="{{ url_for('book_trek', id = trek.id) }}">
+
+
+            <!-- HIGHLIGHTS -->
+
+            <div class="td-highlights">
+
+                <h3 class="td-section-title">
+
+                    Trek Highlights
+
+                </h3>
+
+                <ul>
+
+                    <li>🥾 Scenic mountain trails</li>
+
+                    <li>📸 Stunning viewpoints</li>
+
+                    <li>🌄 Sunrise & Sunset experiences</li>
+
+                    <li>🏕 Guided trekking experience</li>
+
+                    <li>🌿 Nature and wildlife</li>
+
+                </ul>
+
+            </div>
+
+
+
+            <!-- BEST TIME -->
+
+            <div class="td-besttime">
+
+                <h3 class="td-section-title">
+
+                    Best Time to Visit
+
+                </h3>
+
+                <p>
+
+                    October to March generally offers pleasant weather and clear mountain views.
+
+                </p>
+
+            </div>
+
+
+
+            <a
+                class="td-book-btn"
+                href="{{ url_for('book_trek', id=trek.id) }}">
+
                 Book This Trek →
+
             </a>
 
         </div>

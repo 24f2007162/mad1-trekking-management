@@ -5,27 +5,22 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>{% block title %}Musafir Treks{% endblock %}</title>
 
     <!-- Google Font -->
 
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Marcellus&display=swap"
-          rel="stylesheet">
+        rel="stylesheet">
 
     <!-- Font Awesome -->
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
@@ -33,27 +28,37 @@
 
 <body>
 
-<header>
+    <header>
 
-<nav class="navbar">
+        <nav class="navbar">
 
-    <div class="logo">
+            <div class="logo">
+                <figure>
+                    <a href="{{ url_for('login') }}">
 
-        <a href="{{ url_for('login') }}">
+                        <img src="{{ url_for('static', filename='images/musafir_logo.png') }}" alt="Musafir Treks"
+                            class="logo-img">
 
-            <i class="fa-solid fa-mountain-sun"></i>
 
-            <span>Musafir</span>
+                    </a>
 
-        </a>
+                    <figcaption>
+                        <h2 class="logo-name">
+                            Musafir Treks
+                        </h2>
 
-    </div>
+                    </figcaption>
 
-    <ul class="nav-links">
 
-        {% if current_user.is_authenticated %}
+                </figure>
 
-            {% if current_user.role=="user" %}
+            </div>
+
+            <ul class="nav-links">
+
+                {% if current_user.is_authenticated %}
+
+                {% if current_user.role=="user" %}
 
                 <li>
 
@@ -95,7 +100,7 @@
 
                 </li>
 
-            {% elif current_user.role=="admin" %}
+                {% elif current_user.role=="admin" %}
 
                 <li>
 
@@ -107,7 +112,7 @@
 
                 </li>
 
-            {% elif current_user.role=="staff" %}
+                {% elif current_user.role=="staff" %}
 
                 <li>
 
@@ -119,59 +124,55 @@
 
                 </li>
 
-            {% endif %}
+                {% endif %}
 
-            <li>
+                <li>
 
-                <a class="btn-nav"
+                    <a class="btn-nav" href="{{ url_for('logout') }}">
 
-                   href="{{ url_for('logout') }}">
+                        Logout
 
-                    Logout
+                    </a>
 
-                </a>
+                </li>
 
-            </li>
+                {% else %}
 
-        {% else %}
+                <li>
 
-            <li>
+                    <a href="{{ url_for('login') }}">
 
-                <a href="{{ url_for('login') }}">
+                        Login
 
-                    Login
+                    </a>
 
-                </a>
+                </li>
 
-            </li>
+                <li>
 
-            <li>
+                    <a class="btn-nav" href="{{ url_for('register') }}">
 
-                <a class="btn-nav"
+                        Register
 
-                   href="{{ url_for('register') }}">
+                    </a>
 
-                    Register
+                </li>
 
-                </a>
+                {% endif %}
 
-            </li>
+            </ul>
 
-        {% endif %}
+        </nav>
 
-    </ul>
+    </header>
 
-</nav>
+    {% with messages = get_flashed_messages(with_categories=True) %}
 
-</header>
+    {% if messages %}
 
-{% with messages = get_flashed_messages(with_categories=True) %}
+    <div class="flash-container">
 
-{% if messages %}
-
-<div class="flash-container">
-
-    {% for category,message in messages %}
+        {% for category,message in messages %}
 
         <div class="flash {{ category }}">
 
@@ -179,49 +180,50 @@
 
         </div>
 
-    {% endfor %}
-
-</div>
-
-{% endif %}
-
-{% endwith %}
-
-<main class="page-container">
-
-{% block content %}
-
-{% endblock %}
-
-</main>
-
-<footer>
-
-    <div class="footer-content">
-
-        <h2>
-
-            Musafir Treks
-
-        </h2>
-
-        <p>
-
-            Explore India • Trek Together • Travel Responsibly
-
-        </p>
-
-        <br>
-
-        <p>
-
-            © 2026 Musafir Treks
-
-        </p>
+        {% endfor %}
 
     </div>
 
-</footer>
+    {% endif %}
+
+    {% endwith %}
+
+    <main class="page-container">
+
+        {% block content %}
+
+        {% endblock %}
+
+    </main>
+
+    <footer>
+
+        <div class="footer-content">
+            <img src="{{ url_for('static', filename='images/musafir_logo.png') }}" alt="Musafir Treks"
+                class="footer-logo">
+            <h2>
+
+                Musafir Treks
+
+            </h2>
+
+            <p>
+
+                Explore India • Trek Together • Travel Responsibly
+
+            </p>
+
+            <br>
+
+            <p>
+
+                © 2026 Musafir Treks
+
+            </p>
+
+        </div>
+
+    </footer>
 
 </body>
 
