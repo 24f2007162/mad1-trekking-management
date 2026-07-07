@@ -21,7 +21,7 @@ login_manager.login_view = "login"
 
 @login_manager.user_loader
 def user_loader(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 
 LOCATION_MAP = {
@@ -30,7 +30,7 @@ LOCATION_MAP = {
     "Himachal Pradesh": "Manali",
     "Maharashtra": "Pune",
     "Karnataka": "Chikmagalur",
-    "Ladakh":"Leh"
+    "Ladakh": "Leh",
 }
 
 
@@ -151,10 +151,15 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if not user:
-            return "Invalid Credentials"
+            flash("Invalid email or password.", "danger")
+            return redirect(url_for("login"))
 
         if user.status == "inactive":
-            return "Account Disabled"
+            flash(
+                "Your account has been deactivated. Please contact the administrator.",
+                "warning",
+            )
+            return redirect(url_for("login"))
 
         if check_password_hash(user.password, password):
 
@@ -169,7 +174,8 @@ def login():
             else:
                 return redirect(url_for("user_dashboard"))
 
-        return "Invalid Credentials"
+        flash("Invalid email or password.", "danger")
+        return redirect(url_for("login"))
 
     return render_template("login.html")
 
@@ -203,6 +209,11 @@ def admin_dashboard():
         chart_labels=chart_labels,
         chart_values=chart_values,
     )
+
+
+# ======================================================
+# Staff Routes
+# ======================================================
 
 
 @app.route("/staff")
@@ -241,8 +252,6 @@ def view_participants(id):
     if trek.staff_id != current_user.id:
         return "Not Authorized"
     bookings = Booking.query.filter_by(trek_id=id).all()
-
-    print("BOOKED", bookings)
 
     return render_template("staff_participants.html", trek=trek, bookings=bookings)
 
@@ -291,6 +300,11 @@ def complete_trek(id):
     return redirect(url_for("staff_dashboard"))
 
 
+# ======================================================
+# User Routes
+# ======================================================
+
+
 @app.route("/user")
 @login_required
 def user_dashboard():
@@ -299,23 +313,23 @@ def user_dashboard():
     treks = Trek.query.filter(Trek.status == "Open", Trek.available_slots > 0).all()
     bookings = Booking.query.filter_by(user_id=current_user.id).all()
 
-    staff_count = staff.query.count()
+    staff_count = User.query.filter_by(role="staff").count()
 
     locations = db.session.query(Trek.location).distinct().count()
 
     next_booking = (
-    Booking.query.filter_by(user_id=current_user.id)
-    .order_by(Booking.booking_date.asc())
-    .first()
-)
+        Booking.query.filter_by(user_id=current_user.id)
+        .order_by(Booking.booking_date.asc())
+        .first()
+    )
     return render_template(
-    "user_dashboard.html",
-    treks=treks,
-    bookings=bookings,
-    staff_count=staff_count,
-    locations=locations,
-    next_booking=next_booking,
-)
+        "user_dashboard.html",
+        treks=treks,
+        bookings=bookings,
+        staff_count=staff_count,
+        locations=locations,
+        next_booking=next_booking,
+    )
 
 
 @app.route("/book/<int:id>")
@@ -332,11 +346,11 @@ def book_trek(id):
     ).first()
 
     if existing_booking:
-        flash("You have already booked this trek.", "error")
+        flash("You have already booked this trek.", "warning")
         return redirect(url_for("trek_details", id=id))
 
     if trek.available_slots <= 0:
-        flash("No slots available for this trek.", "error")
+        flash("No slots available for this trek.", "danger")
         return redirect(url_for("trek_details", id=id))
 
     booking = Booking(user_id=current_user.id, trek_id=id)
@@ -374,6 +388,8 @@ def cancel_booking(id):
     db.session.delete(booking)
     db.session.commit()
 
+    flash("Booking cancelled successfully.", "success")
+
     return redirect(url_for("my_bookings"))
 
 
@@ -386,28 +402,46 @@ def logout():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+
     if request.method == "POST":
+
         name = request.form.get("name")
         email = request.form.get("email")
         password = request.form.get("password")
-        if len(password) < 8:
-            return "Password must be at least 8 characters"
+
+        if not name or not email:
+            flash("Please fill in all required fields.", "warning")
+            return redirect(url_for("register"))
+
+        if not password or len(password) < 8:
+            flash("Password must be at least 8 characters.", "warning")
+            return redirect(url_for("register"))
 
         if password.isalpha():
-            return "Password should include numbers"
+            flash("Password must contain at least one number.", "warning")
+            return redirect(url_for("register"))
 
         existing_user = User.query.filter_by(email=email).first()
 
         if existing_user:
-            return "User Already Exists"
+            flash("An account with this email already exists.", "warning")
+            return redirect(url_for("register"))
 
         hashed_password = generate_password_hash(password)
 
-        user = User(name=name, email=email, password=hashed_password, role="user")
+        user = User(
+            name=name,
+            email=email,
+            password=hashed_password,
+            role="user",
+        )
+
         db.session.add(user)
         db.session.commit()
 
+        flash("Registration successful! Please login.", "success")
         return redirect(url_for("login"))
+
     return render_template("register.html")
 
 
@@ -424,12 +458,13 @@ def forgot_password():
 
         if not user:
 
-            return "User not found"
-
+            flash("No account found with this email.", "danger")
+            return redirect(url_for("forgot_password"))
         user.password = generate_password_hash(password)
 
         db.session.commit()
 
+        flash("Password updated successfully.", "success")
         return redirect(url_for("login"))
 
     return render_template("forgot_password.html")
@@ -438,21 +473,37 @@ def forgot_password():
 @app.route("/admin/staff/create", methods=["GET", "POST"])
 @login_required
 def create_staff():
+
     if current_user.role != "admin":
         return "Access Denied!"
+
     if request.method == "POST":
+
         name = request.form.get("name")
         email = request.form.get("email")
         password = request.form.get("password")
 
         existing = User.query.filter_by(email=email).first()
+
         if existing:
-            return "Staff Already Exists"
-        staff = User(name=name, email=email, password=password, role="staff")
+            flash("A staff account with this email already exists.", "warning")
+            return redirect(url_for("create_staff"))
+        
+        if not name or not email or not password:
+         flash("Please fill in all required fields.", "warning")
+         return redirect(url_for("create_staff"))
+
+        hashed_password = generate_password_hash(password)
+
+        staff = User(name=name, email=email, password=hashed_password, role="staff")
+
         db.session.add(staff)
         db.session.commit()
 
+        flash("Staff account created successfully.", "success")
+
         return redirect(url_for("view_users"))
+
     return render_template("create_staff.html")
 
 
@@ -498,6 +549,7 @@ def toggle_staff(id):
         staff.status = "active"
 
     db.session.commit()
+    flash("Staff status updated successfully.", "success")
 
     return redirect(url_for("view_staff"))
 
@@ -521,7 +573,6 @@ def create_trek():
     if current_user.role != "admin":
         return "Access Denied!"
     staff = User.query.filter_by(role="staff").all()
-    print("STAFF FOUND", staff)
     if request.method == "POST":
         name = request.form.get("name")
         location = request.form.get("location")
@@ -542,6 +593,7 @@ def create_trek():
         )
         db.session.add(trek)
         db.session.commit()
+        flash("New trek created successfully.", "success")
 
         return redirect(url_for("view_treks"))
     return render_template("create_trek.html", staff=staff)
@@ -558,7 +610,7 @@ def edit_trek(id):
 
     if request.method == "POST":
 
-        print(request.form)
+        
 
         trek.name = request.form.get("name")
         trek.location = request.form.get("location")
@@ -578,6 +630,7 @@ def edit_trek(id):
             trek.staff_id = None
 
         db.session.commit()
+        flash("Trek updated successfully.", "success")
 
         return redirect(url_for("view_treks"))
 
@@ -595,7 +648,7 @@ def delete_trek(id):
 
     db.session.delete(trek)
     db.session.commit()
-
+    flash("Trek deleted successfully.", "success")
     return redirect(url_for("view_treks"))
 
 
@@ -614,25 +667,34 @@ def trek_details(id):
 
     trek = Trek.query.get_or_404(id)
 
-    # Get weather data
+    # Weather
     weather = get_weather(trek.location)
 
-    print("Location:", trek.location)
-    print("Weather:", weather)
-
-    # Generate weather tip only if weather exists
     weather_tip = None
     if weather:
         weather_tip = weather_insight(weather["condition"])
+
+    # Tourist attractions & local food
+    attractions = []
+    foods = []
+
+    for state, info in TREK_INFO.items():
+
+        if state.lower() in trek.location.lower():
+            attractions = info["places"]
+            foods = info["food"]
+            break
 
     return render_template(
         "trek_details.html",
         trek=trek,
         weather=weather,
-        attractions=TREK_INFO.get("places", []),
-        foods=TREK_INFO.get("food", []),
-        weather_tip=weather_tip
+        weather_tip=weather_tip,
+        attractions=attractions,
+        foods=foods,
     )
+
+
 @app.route("/recommend", methods=["GET", "POST"])
 @login_required
 def recommend():
@@ -690,7 +752,7 @@ def recommend():
 
                 if key.lower() in top_trek.location.lower():
 
-                    print("MATCH FOUND!")
+                    
                     places = TREK_INFO[key]["places"]
                     foods = TREK_INFO[key]["food"]
 
@@ -721,14 +783,12 @@ if __name__ == "__main__":
             admin = User(
                 name="Musafir Admin",
                 email="admin@musafir.com",
-                password="musafir123",
+                password=generate_password_hash("musafir123"),
                 role="admin",
             )
 
             db.session.add(admin)
             db.session.commit()
-
-            print("Admin created successfully")
 
         staff = User.query.filter_by(email="staff@musafir.com").first()
 
@@ -736,14 +796,12 @@ if __name__ == "__main__":
             staff = User(
                 name="Rahul Kumar",
                 email="staff@musafir.com",
-                password="staff123",
+                password=generate_password_hash("staff123"),
                 role="staff",
             )
 
             db.session.add(staff)
             db.session.commit()
-
-            print("Staff created")
 
         trek = Trek.query.filter_by(name="Rajgad Trek").first()
 
@@ -761,6 +819,4 @@ if __name__ == "__main__":
             db.session.add(trek)
             db.session.commit()
 
-            print("Trek created")
-
-    app.run(debug=True)
+    app.run()
